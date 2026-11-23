@@ -1,5 +1,6 @@
 /**
- * RELOOP Frontend Application Script
+ * RELOOP: Smart Recycling & Rewards Management Platform
+ * Frontend Client Controller
  * Communicates with the Java backend HttpServer REST API endpoints.
  */
 
@@ -33,7 +34,7 @@ function checkAuth(expectedRole = null) {
     return null;
   }
   if (expectedRole && user.role !== expectedRole && user.role !== "ADMIN") {
-    alert("Unauthorized access. Redirecting to your dashboard.");
+    alert("Unauthorized access. Redirecting to your assigned dashboard.");
     if (user.role === "CUSTOMER") window.location.href = "/customer.html";
     else if (user.role === "OPERATOR") window.location.href = "/operator.html";
     else if (user.role === "ADMIN") window.location.href = "/admin.html";
@@ -154,7 +155,7 @@ async function handleLogin(e) {
       if (data.role === "CUSTOMER") window.location.href = "/customer.html";
       else if (data.role === "OPERATOR") window.location.href = "/operator.html";
       else if (data.role === "ADMIN") window.location.href = "/admin.html";
-    }, 600);
+    }, 500);
   } catch (err) {
     errorEl.innerText = err.message;
   }
@@ -183,12 +184,12 @@ async function handleRegister(e) {
       role: data.role,
       stationId: data.stationId
     });
-    showToast("Registration successful! Welcome to RELOOP.");
+    showToast("Account created successfully!");
     setTimeout(() => {
       if (data.role === "CUSTOMER") window.location.href = "/customer.html";
       else if (data.role === "OPERATOR") window.location.href = "/operator.html";
       else if (data.role === "ADMIN") window.location.href = "/admin.html";
-    }, 600);
+    }, 500);
   } catch (err) {
     errorEl.innerText = err.message;
   }
@@ -204,7 +205,7 @@ function toggleStationField() {
 
 // ---------------- Public Landing Page Initialization ----------------
 async function initLandingPage() {
-  // Load stations for register dropdown
+  // Load stations
   try {
     const stations = await apiCall("/api/stations");
     const select = document.getElementById("reg-station");
@@ -218,50 +219,27 @@ async function initLandingPage() {
       });
     }
 
-    // Render stations on landing page grid
     const stationsContainer = document.getElementById("landing-stations-grid");
     if (stationsContainer) {
       stationsContainer.innerHTML = "";
       stations.forEach(s => {
         const card = document.createElement("div");
-        card.className = "item-card";
+        card.className = "metric-card";
+        card.style.flexDirection = "column";
+        card.style.alignItems = "flex-start";
         card.innerHTML = `
-          <div class="item-header">
-            <h4 class="item-title">${s.name}</h4>
-            <span class="badge badge-verified">OPEN</span>
+          <div style="display: flex; justify-content: space-between; width: 100%; margin-bottom: 8px;">
+            <h4 style="font-size: 15px; color: var(--text-main); font-weight: 700;">${s.name}</h4>
+            <span class="status-pill status-verified">Open</span>
           </div>
-          <p class="item-detail"><strong>Location:</strong> ${s.address}, ${s.area}</p>
-          <p class="item-detail"><strong>Hours:</strong> ${s.openTime} - ${s.closeTime}</p>
+          <p style="font-size: 12.5px; color: var(--text-secondary); margin-bottom: 4px;">📍 ${s.address}, ${s.area}</p>
+          <p style="font-size: 12px; color: var(--primary-green); font-weight: 600;">⏰ Hours: ${s.openTime} - ${s.closeTime}</p>
         `;
         stationsContainer.appendChild(card);
       });
     }
   } catch (err) {
     console.error("Error loading stations for landing page:", err);
-  }
-
-  // Load materials rates on landing page grid
-  try {
-    const materials = await apiCall("/api/materials");
-    const materialsContainer = document.getElementById("landing-materials-grid");
-    if (materialsContainer) {
-      materialsContainer.innerHTML = "";
-      materials.forEach(m => {
-        const card = document.createElement("div");
-        card.className = "item-card";
-        card.innerHTML = `
-          <div class="item-header">
-            <h4 class="item-title">${m.name}</h4>
-            <span class="item-points">${m.pointsPerUnit} pts / ${m.unit}</span>
-          </div>
-          <p class="item-detail">Category: Recyclable Commodity</p>
-          <p class="item-detail">Unit measurement: ${m.unit}</p>
-        `;
-        materialsContainer.appendChild(card);
-      });
-    }
-  } catch (err) {
-    console.error("Error loading materials for landing page:", err);
   }
 
   // Check URL query parameters to auto-open login modal

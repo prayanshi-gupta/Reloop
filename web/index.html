@@ -3,163 +3,260 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RELOOP – Smart Recycling & Rewards Platform</title>
+  <title>RELOOP – Making Recycling Smarter</title>
   <link rel="stylesheet" href="css/style.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
 </head>
 <body>
 
-  <!-- Header -->
-  <header class="header">
-    <div class="container nav">
-      <a href="index.html" class="brand">
-        <!-- Circular Loop Logo SVG -->
-        <svg class="brand-logo" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="24" cy="24" r="22" stroke="#0A2619" stroke-width="2.5" stroke-dasharray="6 4"/>
-          <path d="M16 24C16 19.5817 19.5817 16 24 16C28.4183 16 32 19.5817 32 24C32 28.4183 28.4183 32 24 32" stroke="#C8A951" stroke-width="3" stroke-linecap="round"/>
-          <path d="M32 24L36 20M32 24L36 28" stroke="#0A2619" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <circle cx="24" cy="24" r="3" fill="#0A2619"/>
+  <!-- Top Navigation Bar -->
+  <header class="pub-nav-bar">
+    <div class="container pub-nav">
+      <a href="index.html" class="logo-brand">
+        <!-- Circular Leaf Logo SVG -->
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="16" cy="16" r="15" fill="#21845A"/>
+          <path d="M10 20C10 14.5 14.5 10 20 10C21.5 10 23 11 23 11M23 11L19.5 10M23 11L22.5 14.5" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M22 12C22 17.5 17.5 22 12 22C10.5 22 9 21 9 21M9 21L12.5 22M9 21L9.5 17.5" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
-        <span class="brand-name">RELOOP</span>
+        <span>RELOOP</span>
       </a>
 
-      <ul class="nav-links">
-        <li><a href="#how-it-works" class="nav-link">How It Works</a></li>
-        <li><a href="#materials" class="nav-link">Accepted Materials</a></li>
-        <li><a href="#stations" class="nav-link">Find Stations</a></li>
-        <li><a href="#impact" class="nav-link">Our Impact</a></li>
+      <ul class="pub-nav-links">
+        <li><a href="index.html" class="pub-nav-link">Home</a></li>
+        <li><a href="#how-it-works" class="pub-nav-link">How It Works</a></li>
+        <li><a href="#impact" class="pub-nav-link">Impact</a></li>
+        <li><a href="#find-station" class="pub-nav-link">Find a Station</a></li>
       </ul>
 
-      <div class="nav-actions">
-        <button class="btn btn-outline btn-sm" onclick="openAuthModal('login')">Sign In</button>
-        <button class="btn btn-gold btn-sm" onclick="openAuthModal('register')">Join RELOOP</button>
+      <div class="pub-nav-actions">
+        <button class="btn btn-outline btn-sm" onclick="openAuthModal('login')">Login</button>
+        <button class="btn btn-primary btn-sm" onclick="openAuthModal('register')">Register</button>
       </div>
     </div>
   </header>
 
-  <!-- Hero -->
-  <section class="hero">
+  <!-- Hero Section (Panel 1) -->
+  <section class="pub-hero">
     <div class="container">
-      <div class="hero-tag">
-        <span>🌱 Sustainable Future</span>
-      </div>
-      <h1 class="hero-title">Everyday Waste. Infinite Value.</h1>
-      <p class="hero-subtitle">
-        Turn everyday plastic, aluminium, cardboard, and paper into verified reward points at automated community collection kiosks.
-      </p>
-      <div class="hero-cta">
-        <button class="btn btn-gold" onclick="openAuthModal('register')">Start Recycling Today</button>
-        <a href="#stations" class="btn btn-outline">Find Nearest Kiosk</a>
-      </div>
-
-      <!-- Impact Metrics Ribbon -->
-      <div class="impact-ribbon" id="impact">
-        <div class="impact-item">
-          <div class="impact-number">3,850+</div>
-          <div class="impact-label">Kilograms Recycled</div>
-        </div>
-        <div class="impact-item">
-          <div class="impact-number">128,400</div>
-          <div class="impact-label">Points Awarded</div>
-        </div>
-        <div class="impact-item">
-          <div class="impact-number">100%</div>
-          <div class="impact-label">Verified Materials</div>
-        </div>
-        <div class="impact-item">
-          <div class="impact-number">Zero</div>
-          <div class="impact-label">Landfill Diverted</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- How It Works Section -->
-  <section class="section" id="how-it-works">
-    <div class="container">
-      <div class="section-header">
-        <div class="section-tag">Circularity Simplified</div>
-        <h2 class="section-title">How RELOOP Works</h2>
-        <p class="section-desc">Experience frictionless sustainability in four straightforward steps.</p>
-      </div>
-
-      <div class="workflow-grid">
-        <div class="workflow-card">
-          <div class="workflow-step">STAGE 01</div>
-          <div class="workflow-icon">♻️</div>
-          <h3 class="workflow-title">Bring Recyclables</h3>
-          <p class="workflow-text">Gather plastic bottles, aluminium cans, or clean cardboard and visit your nearest supermarket station.</p>
-        </div>
-        <div class="workflow-card">
-          <div class="workflow-step">STAGE 02</div>
-          <div class="workflow-icon">⚖️</div>
-          <h3 class="workflow-title">Operator Inspection</h3>
-          <p class="workflow-text">Our certified collection operator weighs or counts items and records them in the RELOOP station portal.</p>
-        </div>
-        <div class="workflow-card">
-          <div class="workflow-step">STAGE 03</div>
-          <div class="workflow-icon">🪙</div>
-          <h3 class="workflow-title">Earn Reward Points</h3>
-          <p class="workflow-text">The Java points engine immediately verifies the submission and credits your digital wallet.</p>
-        </div>
-        <div class="workflow-card">
-          <div class="workflow-step">STAGE 04</div>
-          <div class="workflow-icon">🎁</div>
-          <h3 class="workflow-title">Redeem & Repeat</h3>
-          <p class="workflow-text">Use accumulated points to unlock discounts and coupons from partnered grocery stores and cafes.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Materials Section -->
-  <section class="section" id="materials" style="background-color: #F4F6F4;">
-    <div class="container">
-      <div class="section-header">
-        <div class="section-tag">Exchange Rates</div>
-        <h2 class="section-title">Accepted Materials</h2>
-        <p class="section-desc">Live reward points per unit across all active RELOOP collection points.</p>
-      </div>
-
-      <div class="grid-cards" id="landing-materials-grid">
-        <!-- Dynamically loaded from /api/materials -->
-        <p style="text-align: center; grid-column: 1/-1;">Loading live material rates...</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Stations Section -->
-  <section class="section" id="stations">
-    <div class="container">
-      <div class="section-header">
-        <div class="section-tag">Collection Depots</div>
-        <h2 class="section-title">Locate A Recycling Station</h2>
-        <p class="section-desc">Installed right beside your favorite local grocery stores and transit points.</p>
-      </div>
-
-      <div class="grid-cards" id="landing-stations-grid">
-        <!-- Dynamically loaded from /api/stations -->
-        <p style="text-align: center; grid-column: 1/-1;">Loading stations...</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer class="footer">
-    <div class="container">
-      <div class="footer-content">
+      <div class="pub-hero-grid">
         <div>
-          <div class="footer-brand">RELOOP</div>
-          <div class="footer-tagline">"Recycle. Earn. Repeat."</div>
+          <h1 class="pub-hero-title">Making Recycling Smarter. One Collection at a Time.</h1>
+          <p class="pub-hero-desc">
+            RELOOP is a smart recycling management platform that rewards you for recycling and helps build a cleaner, greener community.
+          </p>
+          <div class="pub-hero-btns">
+            <button class="btn btn-primary" onclick="openAuthModal('register')">Get Started</button>
+            <a href="#how-it-works" class="btn btn-outline">Learn More</a>
+          </div>
         </div>
-        <div style="font-size: 14px;">
-          Built with Core Java SE & MySQL | College Evaluation 1 Prototype
+
+        <!-- Clean Hero Visual Graphic -->
+        <div class="hero-visual-card">
+          <!-- City outline in background -->
+          <svg style="position: absolute; bottom: 0; width: 100%; height: 160px; opacity: 0.15;" viewBox="0 0 500 150" preserveAspectRatio="none">
+            <rect x="20" y="40" width="40" height="110" fill="#21845A"/>
+            <rect x="70" y="20" width="55" height="130" fill="#21845A"/>
+            <rect x="135" y="60" width="35" height="90" fill="#21845A"/>
+            <rect x="180" y="30" width="60" height="120" fill="#21845A"/>
+            <rect x="250" y="50" width="45" height="100" fill="#21845A"/>
+            <rect x="305" y="15" width="70" height="135" fill="#21845A"/>
+            <rect x="385" y="45" width="40" height="105" fill="#21845A"/>
+            <rect x="435" y="30" width="50" height="120" fill="#21845A"/>
+          </svg>
+
+          <!-- Recycling Bin Illustration -->
+          <div class="hero-bin-container">
+            <svg width="140" height="180" viewBox="0 0 140 180" fill="none">
+              <!-- Bin Lid -->
+              <rect x="15" y="10" width="110" height="16" rx="4" fill="#1E754F"/>
+              <rect x="25" y="2" width="90" height="10" rx="3" fill="#174B37"/>
+              <rect x="50" y="0" width="40" height="4" rx="2" fill="#113829"/>
+              <!-- Bin Body -->
+              <path d="M22 26L30 170C30.5 174 34 178 38 178H102C106 178 109.5 174 110 170L118 26H22Z" fill="#21845A"/>
+              <!-- White Recycle Symbol -->
+              <g transform="translate(48, 68) scale(1.1)">
+                <path d="M20 2L24 9H16L20 2Z" fill="#FFFFFF"/>
+                <path d="M20 6C26 6 30 11 31 16L28 17C27 13 24 9 20 9V6Z" fill="#FFFFFF"/>
+                <path d="M35 24L34 32L27 28L35 24Z" fill="#FFFFFF"/>
+                <path d="M31 27C28 32 23 35 17 35L17 32C21 32 25 29 28 25L31 27Z" fill="#FFFFFF"/>
+                <path d="M5 24L12 28L5 32L5 24Z" fill="#FFFFFF"/>
+                <path d="M9 25C11 20 15 17 20 17V14C13 14 8 18 6 23L9 25Z" fill="#FFFFFF"/>
+              </g>
+            </svg>
+            <div style="font-size: 13px; font-weight: 700; color: #174B37; margin-top: 8px; letter-spacing: 0.5px;">RELOOP SMART RECYCLING</div>
+          </div>
         </div>
       </div>
-      <div class="footer-copy">
-        &copy; 2026 RELOOP Platform. All rights reserved. Designed for sustainable circular economies.
+    </div>
+  </section>
+
+  <!-- How It Works Section (Panel 1) -->
+  <section class="how-it-works-sec" id="how-it-works">
+    <div class="container">
+      <h2 class="sec-heading">How It Works</h2>
+      <p class="sec-sub">Simple and transparent recycling verification in four clear steps.</p>
+
+      <div class="steps-row">
+        <!-- Step 1 -->
+        <div class="step-item">
+          <div class="step-icon-circle">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </div>
+          <div class="step-title">1. Register</div>
+          <div class="step-desc">Create your account</div>
+        </div>
+
+        <div class="step-arrow">&rarr;</div>
+
+        <!-- Step 2 -->
+        <div class="step-item">
+          <div class="step-icon-circle">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <polyline points="1 20 1 14 7 14"></polyline>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+            </svg>
+          </div>
+          <div class="step-title">2. Recycle</div>
+          <div class="step-desc">Drop off at any station</div>
+        </div>
+
+        <div class="step-arrow">&rarr;</div>
+
+        <!-- Step 3 -->
+        <div class="step-item">
+          <div class="step-icon-circle">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+          </div>
+          <div class="step-title">3. Verify</div>
+          <div class="step-desc">Operator confirms</div>
+        </div>
+
+        <div class="step-arrow">&rarr;</div>
+
+        <!-- Step 4 -->
+        <div class="step-item">
+          <div class="step-icon-circle">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="8" r="7"></circle>
+              <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+            </svg>
+          </div>
+          <div class="step-title">4. Earn Points</div>
+          <div class="step-desc">Get rewards</div>
+        </div>
+      </div>
+
+      <!-- Stats Banner (Panel 1) -->
+      <div class="stats-banner" id="impact">
+        <div class="stat-box">
+          <div class="stat-icon">🌱</div>
+          <div>
+            <div class="stat-num">450 kg</div>
+            <div class="stat-lbl">Total Recycled</div>
+          </div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-icon">👥</div>
+          <div>
+            <div class="stat-num">1,250+</div>
+            <div class="stat-lbl">Active Users</div>
+          </div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-icon">🏛️</div>
+          <div>
+            <div class="stat-num">24</div>
+            <div class="stat-lbl">Collection Stations</div>
+          </div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-icon">🏆</div>
+          <div>
+            <div class="stat-num">98,700</div>
+            <div class="stat-lbl">Points Distributed</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Find a Collection Station (Panel 1) -->
+      <div class="station-locator-box" id="find-station">
+        <!-- Map Graphic -->
+        <div style="background: #E8F0EC; border-radius: var(--radius-sm); height: 160px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; border: 1px solid #D6E4DC;">
+          <!-- SVG Map Pin Graphics -->
+          <svg width="100%" height="100%" viewBox="0 0 400 160" preserveAspectRatio="none">
+            <!-- Road lines -->
+            <path d="M0 40 H400 M0 120 H400 M100 0 V160 M280 0 V160" stroke="#FFFFFF" stroke-width="4"/>
+            <path d="M30 80 Q 150 140 260 60 T 400 90" stroke="#D0DFD6" stroke-width="3" fill="none"/>
+            <!-- Pins -->
+            <g transform="translate(90, 30)">
+              <circle cx="10" cy="10" r="8" fill="#21845A"/>
+              <circle cx="10" cy="10" r="3" fill="#FFFFFF"/>
+            </g>
+            <g transform="translate(190, 70)">
+              <circle cx="10" cy="10" r="8" fill="#21845A"/>
+              <circle cx="10" cy="10" r="3" fill="#FFFFFF"/>
+            </g>
+            <g transform="translate(290, 40)">
+              <circle cx="10" cy="10" r="8" fill="#21845A"/>
+              <circle cx="10" cy="10" r="3" fill="#FFFFFF"/>
+            </g>
+          </svg>
+          <div style="position: absolute; bottom: 10px; left: 14px; font-size: 11px; font-weight: 600; color: var(--dark-forest); background: rgba(255,255,255,0.9); padding: 2px 8px; border-radius: 4px;">
+            Supermarket Drop-Off Network
+          </div>
+        </div>
+
+        <!-- Search Form -->
+        <div style="text-align: left;">
+          <h3 style="font-size: 18px; margin-bottom: 4px;">Find a Collection Station</h3>
+          <p style="font-size: 13px; color: var(--text-secondary);">Locate the nearest recycling station in your area.</p>
+          <div class="locator-search-bar">
+            <input type="text" class="locator-search-input" placeholder="Enter your location...">
+            <button class="btn btn-primary" onclick="openAuthModal('login')">Search</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Stations & Rates Grid -->
+      <div style="margin-top: 30px; text-align: left;">
+        <h3 style="font-size: 18px; margin-bottom: 16px;">Active Kiosks & Accepted Rates</h3>
+        <div class="metric-cards-grid" id="landing-stations-grid">
+          <!-- Dynamically populated from /api/stations -->
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Footer (Panel 1) -->
+  <footer class="pub-footer">
+    <div class="container">
+      <div class="pub-footer-inner">
+        <a href="index.html" class="logo-brand" style="color: #FFFFFF;">
+          <svg width="24" height="24" viewBox="0 0 32 32" fill="none">
+            <circle cx="16" cy="16" r="15" fill="#FFFFFF"/>
+            <path d="M10 20C10 14.5 14.5 10 20 10C21.5 10 23 11 23 11" stroke="#21845A" stroke-width="2"/>
+            <path d="M22 12C22 17.5 17.5 22 12 22C10.5 22 9 21 9 21" stroke="#21845A" stroke-width="2"/>
+          </svg>
+          <span style="color: #FFFFFF; font-size: 18px;">RELOOP</span>
+        </a>
+
+        <div class="pub-footer-links">
+          <a href="#">About</a>
+          <a href="#">Contact</a>
+          <a href="#">FAQ</a>
+          <a href="#">Privacy</a>
+        </div>
+      </div>
+      <div class="pub-footer-copy">
+        &copy; 2026 RELOOP Platform. Smart Recycling & Waste Management Platform.
       </div>
     </div>
   </footer>
@@ -187,10 +284,10 @@
             <label class="form-label">Password</label>
             <input type="password" id="login-password" class="form-control" placeholder="••••••••" required>
           </div>
-          <div id="login-error" style="color: var(--color-danger); font-size: 13px; margin-bottom: 14px;"></div>
+          <div id="login-error" style="color: var(--danger-color); font-size: 13px; margin-bottom: 12px;"></div>
           <button type="submit" class="btn btn-primary" style="width: 100%;">Sign In</button>
 
-          <div style="margin-top: 20px; font-size: 12px; color: var(--color-gray-subtle); background: var(--color-bg); padding: 10px; border-radius: var(--radius-sm);">
+          <div style="margin-top: 18px; font-size: 12px; color: var(--text-secondary); background: var(--bg-page); padding: 10px; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
             <strong>Demo Accounts:</strong><br>
             • Customer: <code>customer@reloop.com</code> / <code>customer123</code><br>
             • Operator: <code>operator@reloop.com</code> / <code>operator123</code><br>
@@ -209,11 +306,11 @@
             <input type="email" id="reg-email" class="form-control" placeholder="name@example.com" required>
           </div>
           <div class="form-group">
-            <label class="form-label">Password (min 6 characters)</label>
+            <label class="form-label">Password</label>
             <input type="password" id="reg-password" class="form-control" placeholder="••••••••" minlength="6" required>
           </div>
           <div class="form-group">
-            <label class="form-label">Role</label>
+            <label class="form-label">Account Role</label>
             <select id="reg-role" class="form-control" onchange="toggleStationField()" required>
               <option value="CUSTOMER">Customer (Recycler)</option>
               <option value="OPERATOR">Collection Station Operator</option>
@@ -221,17 +318,17 @@
             </select>
           </div>
           <div class="form-group" id="reg-station-group" style="display: none;">
-            <label class="form-label">Assigned Station (Operators Only)</label>
+            <label class="form-label">Assigned Station</label>
             <select id="reg-station" class="form-control">
               <option value="">-- Choose Assigned Station --</option>
             </select>
           </div>
           <div class="form-group">
-            <label class="form-label">Phone Number (Optional)</label>
+            <label class="form-label">Phone Number</label>
             <input type="text" id="reg-phone" class="form-control" placeholder="+91 98765 43210">
           </div>
-          <div id="reg-error" style="color: var(--color-danger); font-size: 13px; margin-bottom: 14px;"></div>
-          <button type="submit" class="btn btn-gold" style="width: 100%;">Create Account</button>
+          <div id="reg-error" style="color: var(--danger-color); font-size: 13px; margin-bottom: 12px;"></div>
+          <button type="submit" class="btn btn-primary" style="width: 100%;">Create Account</button>
         </form>
       </div>
     </div>

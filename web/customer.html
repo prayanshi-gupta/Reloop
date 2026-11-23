@@ -3,265 +3,395 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Customer Portal – RELOOP</title>
+  <title>Customer Dashboard – RELOOP</title>
   <link rel="stylesheet" href="css/style.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
 </head>
 <body>
 
-  <!-- Header -->
-  <header class="header">
-    <div class="container nav">
-      <a href="customer.html" class="brand">
-        <svg class="brand-logo" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="24" cy="24" r="22" stroke="#0A2619" stroke-width="2.5" stroke-dasharray="6 4"/>
-          <path d="M16 24C16 19.5817 19.5817 16 24 16C28.4183 16 32 19.5817 32 24C32 28.4183 28.4183 32 24 32" stroke="#C8A951" stroke-width="3" stroke-linecap="round"/>
-          <circle cx="24" cy="24" r="3" fill="#0A2619"/>
+  <div class="dash-wrapper">
+    <!-- Left Sidebar (Panel 2) -->
+    <aside class="dash-sidebar">
+      <div class="sidebar-brand">
+        <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
+          <circle cx="16" cy="16" r="15" fill="#21845A"/>
+          <path d="M10 20C10 14.5 14.5 10 20 10C21.5 10 23 11 23 11M23 11L19.5 10M23 11L22.5 14.5" stroke="#FFFFFF" stroke-width="2"/>
+          <path d="M22 12C22 17.5 17.5 22 12 22C10.5 22 9 21 9 21M9 21L12.5 22M9 21L9.5 17.5" stroke="#FFFFFF" stroke-width="2"/>
         </svg>
-        <span class="brand-name">RELOOP</span>
-      </a>
-
-      <div class="nav-actions">
-        <span id="user-badge" style="font-size: 14px; font-weight: 600; color: var(--color-forest);">Hello, Recycler</span>
-        <button class="btn btn-outline btn-sm" onclick="logout()">Logout</button>
-      </div>
-    </div>
-  </header>
-
-  <!-- Dashboard Main Container -->
-  <main class="container dashboard-page">
-    
-    <!-- Welcome Header & Live Wallet -->
-    <div class="dashboard-header">
-      <div>
-        <h1 class="user-welcome-title" id="welcome-heading">Welcome Back</h1>
-        <p class="user-welcome-sub">Manage your recycling submissions and accumulated reward balance.</p>
+        <span>RELOOP</span>
       </div>
 
-      <!-- Wallet Balance Widget -->
-      <div class="wallet-badge-card">
-        <div class="wallet-badge-icon">🪙</div>
-        <div>
-          <div class="wallet-badge-num" id="wallet-balance">--</div>
-          <div class="wallet-badge-txt">Reward Points Balance</div>
+      <nav class="sidebar-nav">
+        <a class="nav-item active" href="customer.html">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+          <span>Dashboard</span>
+        </a>
+
+        <a class="nav-item" href="javascript:void(0)" onclick="openSubmissionModal()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <polyline points="1 20 1 14 7 14"></polyline>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+          </svg>
+          <span>Submit Recycling</span>
+        </a>
+
+        <a class="nav-item" href="#history-section">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          <span>My History</span>
+        </a>
+
+        <a class="nav-item" href="javascript:void(0)" onclick="showToast('Wallet balance: ' + document.getElementById('wallet-points-val').innerText + ' points')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+            <line x1="2" y1="10" x2="22" y2="10"></line>
+          </svg>
+          <span>Wallet</span>
+        </a>
+
+        <a class="nav-item" href="#stations-card">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+            <circle cx="12" cy="10" r="3"></circle>
+          </svg>
+          <span>Stations</span>
+        </a>
+
+        <a class="nav-item" href="javascript:void(0)" onclick="showToast('Profile: ' + currentCustomer.name)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <span>Profile</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <a class="nav-item" href="javascript:void(0)" onclick="logout()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+          <span>Logout</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content (Panel 2) -->
+    <main class="dash-main">
+      <!-- Topbar -->
+      <div class="dash-topbar">
+        <div class="dash-title-group">
+          <h1 id="customer-greeting">Welcome back, Recycler!</h1>
+          <p>Let's keep making an environmental difference together.</p>
+        </div>
+
+        <div class="dash-profile-pill">
+          <div class="profile-avatar-circle" id="user-avatar">C</div>
+          <span id="user-email-pill">customer@reloop.com</span>
         </div>
       </div>
-    </div>
 
-    <!-- Layout Columns: New Submission Form on Left, History on Right -->
-    <div style="display: grid; grid-template-columns: 1fr 1.6fr; gap: 32px; align-items: start;">
-      
-      <!-- New Drop-off Registration Card -->
-      <div class="item-card">
-        <div class="item-header">
-          <h2 class="item-title">New Recycling Drop-Off</h2>
-          <span class="badge badge-pending">STAGE 1</span>
+      <!-- 3 Metric Cards (Panel 2) -->
+      <div class="metric-cards-grid">
+        <!-- Metric 1: Points -->
+        <div class="metric-card">
+          <div class="metric-card-icon icon-green-bg">🌱</div>
+          <div>
+            <div class="metric-val" id="wallet-points-val">0</div>
+            <div class="metric-title">Your Points</div>
+          </div>
         </div>
-        <p class="item-detail" style="margin-bottom: 20px;">
-          Select a nearby station and declare the materials you are bringing for drop-off.
-        </p>
 
-        <form id="submission-form" onsubmit="handleNewSubmission(event)">
-          <div class="form-group">
-            <label class="form-label">Target Recycling Station</label>
-            <select id="sub-station" class="form-control" onchange="onStationChanged()" required>
-              <option value="">-- Choose Nearest Station --</option>
-            </select>
+        <!-- Metric 2: Total Recycled -->
+        <div class="metric-card">
+          <div class="metric-card-icon icon-green-bg">♻️</div>
+          <div>
+            <div class="metric-val" id="total-weight-val">0 kg</div>
+            <div class="metric-title">Total Recycled</div>
+          </div>
+        </div>
+
+        <!-- Metric 3: Submissions -->
+        <div class="metric-card">
+          <div class="metric-card-icon icon-yellow-bg">🏆</div>
+          <div>
+            <div class="metric-val" id="total-subs-count">0</div>
+            <div class="metric-title">Total Submissions</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2-Column Content Grid (Panel 2) -->
+      <div class="dash-two-col">
+        <!-- Left: Recent Submissions -->
+        <div class="card" id="history-section">
+          <div class="card-header-flex">
+            <h2>Recent Submissions</h2>
+            <button class="btn btn-secondary btn-sm" onclick="openSubmissionModal()">+ Submit Drop-Off</button>
           </div>
 
-          <!-- Dynamic Items Table -->
-          <div class="form-group">
-            <label class="form-label">Materials to Submit</label>
-            <div id="material-rows-container">
-              <!-- Dynamically generated rows -->
-            </div>
-            <button type="button" class="btn btn-secondary btn-sm" onclick="addMaterialRow()" style="margin-top: 8px;">
-              + Add Material
-            </button>
-          </div>
-
-          <div id="sub-error" style="color: var(--color-danger); font-size: 13px; margin-bottom: 14px;"></div>
-          <button type="submit" class="btn btn-gold" style="width: 100%;">Submit Drop-Off Request</button>
-        </form>
-      </div>
-
-      <!-- Recycling Submissions History Table -->
-      <div>
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
-          <h2 style="font-family: var(--font-serif); font-size: 24px; color: var(--color-forest);">Recycling History</h2>
-          <button class="btn btn-secondary btn-sm" onclick="loadHistory()">Refresh</button>
-        </div>
-
-        <div class="table-responsive">
-          <table class="table">
+          <table class="saas-table">
             <thead>
               <tr>
-                <th>ID</th>
-                <th>Station</th>
-                <th>Items & Quantities</th>
-                <th>Points</th>
-                <th>Status</th>
                 <th>Date</th>
+                <th>Materials</th>
+                <th>Weight / Qty</th>
+                <th>Status</th>
               </tr>
             </thead>
-            <tbody id="history-table-body">
+            <tbody id="customer-history-tbody">
               <tr>
-                <td colspan="6" style="text-align: center; color: var(--color-gray-subtle);">Loading submissions...</td>
+                <td colspan="4" style="text-align: center; color: var(--text-secondary); padding: 24px;">Loading submissions...</td>
               </tr>
             </tbody>
           </table>
         </div>
+
+        <!-- Right: Nearby Stations -->
+        <div class="card" id="stations-card">
+          <div class="card-header-flex">
+            <h2>Nearby Stations</h2>
+            <a href="javascript:void(0)" class="card-action-link" onclick="openSubmissionModal()">View All &rarr;</a>
+          </div>
+
+          <!-- Kiosk Visual Box -->
+          <div class="station-preview-box">
+            <div class="station-preview-img">
+              <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-3M9 9h1M9 13h1M9 17h1"></path>
+              </svg>
+            </div>
+            <h4 style="font-size: 15px; color: var(--text-main); margin-bottom: 2px;" id="station-featured-name">GreenMart Central</h4>
+            <p style="font-size: 12.5px; color: var(--text-secondary); margin-bottom: 12px;">1.2 km &bull; Open until 8:00 PM</p>
+            <button class="btn btn-primary btn-sm" style="width: 100%;" onclick="openSubmissionModal()">Create Drop-Off Here</button>
+          </div>
+        </div>
       </div>
 
-    </div>
+      <!-- Bottom Green Planet Banner (Panel 2) -->
+      <div class="green-planet-banner">
+        <div class="banner-content">
+          <h3>Together for a Greener Planet</h3>
+          <p>Recycle more. Earn more. Make an impact. Every plastic bottle and aluminium can diverted from landfills helps preserve urban ecosystems.</p>
+        </div>
 
-  </main>
+        <svg width="120" height="120" viewBox="0 0 100 100" fill="none" style="opacity: 0.9; margin-left: 20px;">
+          <!-- Planet Earth Graphic -->
+          <circle cx="50" cy="50" r="44" fill="#1C6647" stroke="#3AA876" stroke-width="3"/>
+          <path d="M26 40C32 38 42 42 45 48C48 54 40 60 36 62C30 65 24 58 26 50Z" fill="#3AA876"/>
+          <path d="M60 25C65 24 74 27 75 32C76 37 68 44 62 44C56 44 55 35 58 29Z" fill="#3AA876"/>
+          <path d="M54 62C60 60 70 65 72 70C74 75 66 82 58 80C50 78 50 68 54 62Z" fill="#3AA876"/>
+          <!-- Orbit Ring -->
+          <ellipse cx="50" cy="50" rx="48" ry="16" stroke="#DDF2E5" stroke-width="1.5" stroke-dasharray="4 3" transform="rotate(-25 50 50)"/>
+        </svg>
+      </div>
+    </main>
+  </div>
+
+  <!-- Submit Recycling Modal -->
+  <div class="modal-overlay" id="submission-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Submit Recycling Drop-Off</h3>
+        <button class="modal-close" onclick="closeSubmissionModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="customer-sub-form" onsubmit="handleCustomerSubmit(event)">
+          <div class="form-group">
+            <label class="form-label">Select Recycling Station</label>
+            <select id="sub-station-select" class="form-control" required>
+              <option value="">-- Choose Nearest Kiosk --</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Materials to Submit</label>
+            <div id="sub-materials-container">
+              <!-- Dynamically added material rows -->
+            </div>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="addCustomerMaterialRow()" style="margin-top: 6px;">
+              + Add Material
+            </button>
+          </div>
+
+          <div id="sub-form-error" style="color: var(--danger-color); font-size: 13px; margin-bottom: 12px;"></div>
+          <button type="submit" class="btn btn-primary" style="width: 100%;">Confirm & Submit Request</button>
+        </form>
+      </div>
+    </div>
+  </div>
 
   <script src="js/app.js"></script>
   <script>
-    let activeMaterials = [];
+    let currentCustomer = null;
+    let materialCatalog = [];
 
     document.addEventListener("DOMContentLoaded", async () => {
-      const user = checkAuth("CUSTOMER");
-      if (!user) return;
+      currentCustomer = checkAuth("CUSTOMER");
+      if (!currentCustomer) return;
 
-      document.getElementById("welcome-heading").innerText = "Welcome, " + user.name;
-      document.getElementById("user-badge").innerText = user.name + " (" + user.email + ")";
+      document.getElementById("customer-greeting").innerText = `Welcome back, ${currentCustomer.name}!`;
+      document.getElementById("user-avatar").innerText = currentCustomer.name.charAt(0).toUpperCase();
+      document.getElementById("user-email-pill").innerText = currentCustomer.email;
 
-      await loadWallet();
-      await loadStations();
-      await loadMaterials();
-      await loadHistory();
-
-      // Add one default row
-      addMaterialRow();
+      await loadCustomerWallet();
+      await loadStationsList();
+      await loadMaterialsCatalog();
+      await loadCustomerHistory();
     });
 
-    async function loadWallet() {
+    async function loadCustomerWallet() {
       try {
         const wallet = await apiCall("/api/wallet/balance");
-        document.getElementById("wallet-balance").innerText = wallet.balance.toLocaleString();
+        document.getElementById("wallet-points-val").innerText = wallet.balance.toLocaleString();
       } catch (err) {
-        document.getElementById("wallet-balance").innerText = "0";
+        document.getElementById("wallet-points-val").innerText = "0";
       }
     }
 
-    async function loadStations() {
+    async function loadStationsList() {
       try {
         const stations = await apiCall("/api/stations");
-        const select = document.getElementById("sub-station");
-        select.innerHTML = '<option value="">-- Choose Nearest Station --</option>';
+        const select = document.getElementById("sub-station-select");
+        select.innerHTML = '<option value="">-- Choose Nearest Kiosk --</option>';
         stations.forEach(s => {
           const opt = document.createElement("option");
           opt.value = s.id;
-          opt.text = s.name + " - " + s.area;
+          opt.text = s.name + " (" + s.area + ")";
           select.appendChild(opt);
         });
+
+        if (stations.length > 0) {
+          document.getElementById("station-featured-name").innerText = stations[0].name;
+        }
       } catch (err) {
-        console.error("Failed to load stations:", err);
+        console.error("Error loading stations:", err);
       }
     }
 
-    async function loadMaterials() {
+    async function loadMaterialsCatalog() {
       try {
-        activeMaterials = await apiCall("/api/materials");
+        materialCatalog = await apiCall("/api/materials");
       } catch (err) {
-        console.error("Failed to load materials:", err);
+        console.error("Error loading materials:", err);
       }
     }
 
-    function addMaterialRow() {
-      const container = document.getElementById("material-rows-container");
+    async function loadCustomerHistory() {
+      const tbody = document.getElementById("customer-history-tbody");
+      try {
+        const history = await apiCall("/api/submissions/customer");
+        document.getElementById("total-subs-count").innerText = history.length;
+
+        let totalKg = 0;
+        history.forEach(sub => {
+          if (sub.status === "VERIFIED") {
+            sub.items.forEach(it => {
+              totalKg += it.quantity;
+            });
+          }
+        });
+        document.getElementById("total-weight-val").innerText = totalKg.toFixed(1) + " kg";
+
+        if (history.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-secondary); padding: 24px;">No recycling records found. Make your first drop-off!</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = "";
+        history.forEach(sub => {
+          let materialsSummary = sub.items.map(it => it.materialName).join(", ") || "Recyclables";
+          let totalQty = sub.items.reduce((acc, it) => acc + it.quantity, 0);
+          let unit = sub.items.length > 0 ? sub.items[0].unit : "kg";
+
+          let statusClass = "status-pending";
+          if (sub.status === "VERIFIED") statusClass = "status-verified";
+          else if (sub.status === "REJECTED") statusClass = "status-rejected";
+
+          let dateStr = sub.createdAt ? sub.createdAt.substring(0, 10) : "Today";
+
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${dateStr}</td>
+            <td><strong>${materialsSummary}</strong></td>
+            <td>${totalQty.toFixed(1)} ${unit}</td>
+            <td><span class="status-pill ${statusClass}">${sub.status}</span></td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="4" style="color: var(--danger-color); text-align: center;">Error loading history: ${err.message}</td></tr>`;
+      }
+    }
+
+    function openSubmissionModal() {
+      const container = document.getElementById("sub-materials-container");
+      container.innerHTML = "";
+      addCustomerMaterialRow();
+      document.getElementById("sub-form-error").innerText = "";
+      document.getElementById("submission-modal").classList.add("active");
+    }
+
+    function closeSubmissionModal() {
+      document.getElementById("submission-modal").classList.remove("active");
+    }
+
+    function addCustomerMaterialRow() {
+      const container = document.getElementById("sub-materials-container");
       const row = document.createElement("div");
-      row.className = "material-input-row";
+      row.className = "customer-mat-row";
       row.style.cssText = "display: flex; gap: 8px; margin-bottom: 8px; align-items: center;";
 
-      let optionsHtml = '<option value="">-- Select Material --</option>';
-      activeMaterials.forEach(m => {
+      let optionsHtml = '<option value="">-- Material --</option>';
+      materialCatalog.forEach(m => {
         optionsHtml += `<option value="${m.id}">${m.name} (${m.pointsPerUnit} pts/${m.unit})</option>`;
       });
 
       row.innerHTML = `
-        <select class="form-control mat-select" style="flex: 2;" required>
+        <select class="form-control c-mat" style="flex: 2;" required>
           ${optionsHtml}
         </select>
-        <input type="number" step="0.1" min="0.1" max="1000" class="form-control mat-qty" placeholder="Qty / Wt" style="flex: 1;" required>
-        <button type="button" class="btn btn-secondary btn-sm" onclick="this.parentElement.remove()" style="padding: 10px;">&times;</button>
+        <input type="number" step="0.1" min="0.1" max="1000" class="form-control c-qty" placeholder="Quantity/Kg" style="flex: 1;" required>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="this.parentElement.remove()" style="padding: 8px 10px;">&times;</button>
       `;
       container.appendChild(row);
     }
 
-    function onStationChanged() {
-      // Optional: filter materials if station specific
-    }
-
-    async function handleNewSubmission(e) {
+    async function handleCustomerSubmit(e) {
       e.preventDefault();
-      const stationId = parseInt(document.getElementById("sub-station").value);
-      const rows = document.querySelectorAll(".material-input-row");
-      const errEl = document.getElementById("sub-error");
+      const stationId = parseInt(document.getElementById("sub-station-select").value);
+      const rows = document.querySelectorAll(".customer-mat-row");
+      const errEl = document.getElementById("sub-form-error");
       errEl.innerText = "";
 
       const items = [];
       rows.forEach(r => {
-        const matId = parseInt(r.querySelector(".mat-select").value);
-        const qty = parseFloat(r.querySelector(".mat-qty").value);
+        const matId = parseInt(r.querySelector(".c-mat").value);
+        const qty = parseFloat(r.querySelector(".c-qty").value);
         if (matId && qty > 0) {
           items.push({ materialId: matId, quantity: qty });
         }
       });
 
       if (items.length === 0) {
-        errEl.innerText = "Please add at least one material with a positive quantity.";
+        errEl.innerText = "Please specify at least one item with a valid positive quantity.";
         return;
       }
 
       try {
         await apiCall("/api/submissions/create", "POST", { stationId, items });
-        showToast("Submission registered! Bring materials to the station for operator verification.");
-        document.getElementById("sub-station").value = "";
-        document.getElementById("material-rows-container").innerHTML = "";
-        addMaterialRow();
-        await loadHistory();
+        showToast("Drop-off registered! Operator will inspect and credit your points.");
+        closeSubmissionModal();
+        await loadCustomerHistory();
       } catch (err) {
         errEl.innerText = err.message;
-      }
-    }
-
-    async function loadHistory() {
-      const tbody = document.getElementById("history-table-body");
-      try {
-        const history = await apiCall("/api/submissions/customer");
-        if (history.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--color-gray-subtle);">No submissions recorded yet. Make your first drop-off!</td></tr>';
-          return;
-        }
-
-        tbody.innerHTML = "";
-        history.forEach(sub => {
-          let itemsText = sub.items.map(it => `${it.materialName}: ${it.quantity} ${it.unit}`).join("<br>");
-          let badgeClass = "badge-pending";
-          if (sub.status === "VERIFIED") badgeClass = "badge-verified";
-          else if (sub.status === "REJECTED") badgeClass = "badge-rejected";
-
-          const tr = document.createElement("tr");
-          tr.innerHTML = `
-            <td>#${sub.id}</td>
-            <td><strong>${sub.stationName || "Station " + sub.stationId}</strong></td>
-            <td>${itemsText || "Standard batch"}</td>
-            <td><strong>${sub.totalPoints} pts</strong></td>
-            <td>
-              <span class="badge ${badgeClass}">${sub.status}</span>
-              ${sub.rejectReason ? `<br><small style="color: var(--color-danger);">${sub.rejectReason}</small>` : ""}
-            </td>
-            <td>${sub.createdAt ? sub.createdAt.substring(0, 16).replace("T", " ") : "Just now"}</td>
-          `;
-          tbody.appendChild(tr);
-        });
-      } catch (err) {
-        tbody.innerHTML = `<tr><td colspan="6" style="color: var(--color-danger); text-align: center;">Error loading history: ${err.message}</td></tr>`;
       }
     }
   </script>

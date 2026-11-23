@@ -3,292 +3,372 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Operator Desk – RELOOP</title>
+  <title>Operator Dashboard – RELOOP</title>
   <link rel="stylesheet" href="css/style.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
 </head>
 <body>
 
-  <!-- Header -->
-  <header class="header">
-    <div class="container nav">
-      <a href="operator.html" class="brand">
-        <svg class="brand-logo" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="24" cy="24" r="22" stroke="#0A2619" stroke-width="2.5" stroke-dasharray="6 4"/>
-          <path d="M16 24C16 19.5817 19.5817 16 24 16C28.4183 16 32 19.5817 32 24C32 28.4183 28.4183 32 24 32" stroke="#C8A951" stroke-width="3" stroke-linecap="round"/>
-          <circle cx="24" cy="24" r="3" fill="#0A2619"/>
+  <div class="dash-wrapper">
+    <!-- Left Sidebar (Panel 3) -->
+    <aside class="dash-sidebar">
+      <div class="sidebar-brand">
+        <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
+          <circle cx="16" cy="16" r="15" fill="#21845A"/>
+          <path d="M10 20C10 14.5 14.5 10 20 10C21.5 10 23 11 23 11M23 11L19.5 10M23 11L22.5 14.5" stroke="#FFFFFF" stroke-width="2"/>
+          <path d="M22 12C22 17.5 17.5 22 12 22C10.5 22 9 21 9 21M9 21L12.5 22M9 21L9.5 17.5" stroke="#FFFFFF" stroke-width="2"/>
         </svg>
-        <span class="brand-name">RELOOP</span>
-      </a>
-
-      <div class="nav-actions">
-        <span class="badge badge-verified" id="station-badge">Station: Assigned Kiosk</span>
-        <span id="operator-badge" style="font-size: 14px; font-weight: 600; color: var(--color-forest);">Operator</span>
-        <button class="btn btn-outline btn-sm" onclick="logout()">Logout</button>
+        <span>RELOOP</span>
       </div>
-    </div>
-  </header>
 
-  <!-- Main Container -->
-  <main class="container dashboard-page">
-    
-    <div class="dashboard-header">
-      <div>
-        <h1 class="user-welcome-title">Station Verification Desk</h1>
-        <p class="user-welcome-sub">Inspect dropped-off recyclables, record verified weights, and issue digital points.</p>
-      </div>
-      <div>
-        <button class="btn btn-secondary btn-sm" onclick="loadPendingQueue()">Refresh Queue</button>
-      </div>
-    </div>
+      <nav class="sidebar-nav">
+        <a class="nav-item active" href="operator.html">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+          <span>Dashboard</span>
+        </a>
 
-    <!-- Pending Queue Table -->
-    <div class="item-card" style="margin-bottom: 32px;">
-      <div class="item-header">
-        <h2 class="item-title">Pending Submissions Queue</h2>
-        <span class="badge badge-pending" id="queue-count">0 Waiting</span>
-      </div>
-      <p class="item-detail" style="margin-bottom: 20px;">
-        Customers awaiting physical inspection at this recycling kiosk.
-      </p>
+        <a class="nav-item" href="#pending-section">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+          </svg>
+          <span>Pending Submissions</span>
+          <span class="nav-item-badge" id="sidebar-queue-badge">0</span>
+        </a>
 
-      <div class="table-responsive">
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Sub ID</th>
-              <th>Customer</th>
-              <th>Declared Items</th>
-              <th>Submitted At</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="pending-table-body">
-            <tr>
-              <td colspan="5" style="text-align: center; color: var(--color-gray-subtle);">Loading pending queue...</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+        <a class="nav-item" href="javascript:void(0)" onclick="showToast('Showing verified collection logs')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+          <span>Verification History</span>
+        </a>
 
-  </main>
+        <a class="nav-item" href="#station-info-card">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-3M9 9h1M9 13h1M9 17h1"></path>
+          </svg>
+          <span>Station Info</span>
+        </a>
 
-  <!-- Verification Modal -->
-  <div class="modal-overlay" id="verify-modal">
-    <div class="modal-card" style="max-width: 580px;">
-      <div class="modal-header">
-        <h3 class="modal-title">Inspect & Verify Submission</h3>
-        <button class="modal-close" onclick="closeVerifyModal()">&times;</button>
+        <a class="nav-item" href="javascript:void(0)" onclick="showToast('Operator Profile: ' + currentOperator.name)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <span>Profile</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <a class="nav-item" href="javascript:void(0)" onclick="logout()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+          <span>Logout</span>
+        </a>
       </div>
-      <div class="modal-body">
-        <div style="background: var(--color-bg); padding: 14px; border-radius: var(--radius-sm); margin-bottom: 20px;">
-          <div style="font-size: 13px; color: var(--color-gray-subtle);">Customer: <strong id="modal-cust-name" style="color: var(--color-forest);">--</strong></div>
-          <div style="font-size: 13px; color: var(--color-gray-subtle);">Submission ID: <strong id="modal-sub-id" style="color: var(--color-forest);">--</strong></div>
+    </aside>
+
+    <!-- Main Content (Panel 3) -->
+    <main class="dash-main">
+      <!-- Topbar -->
+      <div class="dash-topbar">
+        <div class="dash-title-group">
+          <h1>Operator Dashboard</h1>
+          <p>Verify recycling submissions and ensure accurate reporting.</p>
         </div>
 
-        <form id="verify-form" onsubmit="handleConfirmVerification(event)">
-          <div class="form-group">
-            <label class="form-label">Verified Materials & Measured Quantities</label>
-            <div id="verify-rows-container">
-              <!-- Dynamically populated rows for measured items -->
+        <div class="dash-profile-pill">
+          <div class="profile-avatar-circle" id="op-avatar">O</div>
+          <span id="op-email-pill">operator@reloop.com</span>
+        </div>
+      </div>
+
+      <!-- Top Row: Pending Submissions (Left) + Station Information (Right) -->
+      <div class="dash-two-col" id="pending-section">
+        <!-- Top Left: Pending Submissions (Panel 3) -->
+        <div class="card">
+          <div class="card-header-flex">
+            <h2>Pending Submissions <span id="queue-count-txt" style="color: var(--primary-green); font-size: 14px;">(0)</span></h2>
+            <a href="javascript:void(0)" class="card-action-link" onclick="loadPendingQueue()">Refresh &rarr;</a>
+          </div>
+
+          <table class="saas-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Customer</th>
+                <th>Materials</th>
+                <th>Weight</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="operator-pending-tbody">
+              <tr>
+                <td colspan="5" style="text-align: center; color: var(--text-secondary); padding: 24px;">Loading pending queue...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Top Right: Station Information (Panel 3) -->
+        <div class="card" id="station-info-card">
+          <div class="card-header-flex">
+            <h2>Station Information</h2>
+          </div>
+
+          <div class="station-preview-box" style="margin-top: 0;">
+            <div class="station-preview-img">
+              <!-- Kiosk Graphic -->
+              <svg width="70" height="70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-3M9 9h1M9 13h1M9 17h1"></path>
+              </svg>
             </div>
-            <button type="button" class="btn btn-secondary btn-sm" onclick="addVerifyRow()" style="margin-top: 8px;">
-              + Add Another Material
+            <h4 style="font-size: 16px; font-weight: 700; color: var(--text-main);" id="op-station-name">GreenMart Central</h4>
+            <div style="display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--primary-green); font-weight: 600; margin: 4px 0 8px;">
+              <span style="width: 7px; height: 7px; border-radius: 50%; background: var(--primary-green); display: inline-block;"></span>
+              <span>Open Now</span>
+            </div>
+            <p style="font-size: 12.5px; color: var(--text-secondary); margin-bottom: 8px;">
+              ⏰ 8:00 AM - 8:00 PM<br>
+              📍 Station ID: <span id="op-station-id-txt">1</span>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Row: Verification Form (Left) + Points Preview (Right) (Panel 3) -->
+      <div class="dash-two-col">
+        <!-- Bottom Left: Verification Form -->
+        <div class="card">
+          <div class="card-header-flex">
+            <h2>Verification Form</h2>
+          </div>
+
+          <form id="active-verification-form" onsubmit="handleConfirmVerification(event)">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 14px;">
+              <div>
+                <label class="form-label">Submission ID</label>
+                <input type="text" id="vf-sub-id" class="form-control" placeholder="#SUB-1048" readonly style="background: #F4F7F5; font-weight: 600;">
+              </div>
+              <div>
+                <label class="form-label">Measured Weight (kg) / Qty</label>
+                <input type="number" step="0.1" min="0.1" max="5000" id="vf-weight" class="form-control" placeholder="5.0" oninput="updateLivePointsPreview()" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Material Category</label>
+              <select id="vf-material-select" class="form-control" onchange="updateLivePointsPreview()" required>
+                <!-- Populated dynamically -->
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Notes (Optional)</label>
+              <input type="text" id="vf-notes" class="form-control" placeholder="Clean material, verified condition">
+            </div>
+
+            <div id="vf-error" style="color: var(--danger-color); font-size: 13px; margin-bottom: 12px;"></div>
+          </form>
+        </div>
+
+        <!-- Bottom Right: Points Preview Box -->
+        <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+          <div class="card-header-flex">
+            <h2>Points Preview</h2>
+          </div>
+
+          <div class="points-preview-box">
+            <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#21845A" stroke-width="2" style="margin: 0 auto;">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <polyline points="1 20 1 14 7 14"></polyline>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+            </svg>
+            <div class="points-preview-num" id="points-preview-display">+0 Points</div>
+            <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 20px;">Calculated automatically based on verified material rate.</p>
+          </div>
+
+          <div style="display: flex; gap: 10px; margin-top: 18px;">
+            <button type="button" class="btn btn-primary" style="flex: 2;" onclick="document.getElementById('active-verification-form').requestSubmit()">
+              Confirm & Credit Points
+            </button>
+            <button type="button" class="btn btn-outline" style="flex: 1;" onclick="handleRejectAction()">
+              Reject Submission
             </button>
           </div>
-
-          <!-- Live Points Preview -->
-          <div style="background: var(--color-champagne-light); border: 1px solid rgba(200, 169, 81, 0.4); border-radius: var(--radius-sm); padding: 14px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-size: 13px; font-weight: 600; color: #8C6F23;">Calculated Reward Points:</span>
-            <span id="live-points-preview" style="font-family: var(--font-serif); font-size: 22px; font-weight: 700; color: #8C6F23;">0 pts</span>
-          </div>
-
-          <div id="verify-error" style="color: var(--color-danger); font-size: 13px; margin-bottom: 14px;"></div>
-
-          <div style="display: flex; gap: 12px;">
-            <button type="button" class="btn btn-danger" onclick="handlePromptReject()" style="flex: 1;">Reject</button>
-            <button type="submit" class="btn btn-primary" style="flex: 2;">Verify & Credit Wallet</button>
-          </div>
-        </form>
+        </div>
       </div>
-    </div>
+
+    </main>
   </div>
 
   <script src="js/app.js"></script>
   <script>
     let currentOperator = null;
     let allMaterials = [];
-    let activeSubmission = null;
+    let pendingSubmissions = [];
+    let selectedSub = null;
 
     document.addEventListener("DOMContentLoaded", async () => {
       currentOperator = checkAuth("OPERATOR");
       if (!currentOperator) return;
 
-      document.getElementById("operator-badge").innerText = currentOperator.name;
-      document.getElementById("station-badge").innerText = "Station ID: " + (currentOperator.stationId || "1");
+      document.getElementById("op-avatar").innerText = currentOperator.name.charAt(0).toUpperCase();
+      document.getElementById("op-email-pill").innerText = currentOperator.email;
+      if (currentOperator.stationId) {
+        document.getElementById("op-station-id-txt").innerText = currentOperator.stationId;
+      }
 
       try {
         allMaterials = await apiCall("/api/materials");
+        const matSelect = document.getElementById("vf-material-select");
+        matSelect.innerHTML = "";
+        allMaterials.forEach(m => {
+          const opt = document.createElement("option");
+          opt.value = m.id;
+          opt.dataset.rate = m.pointsPerUnit;
+          opt.dataset.unit = m.unit;
+          opt.text = `${m.name} (${m.pointsPerUnit} pts/${m.unit})`;
+          matSelect.appendChild(opt);
+        });
       } catch (err) {
-        console.error("Failed to load materials catalog:", err);
+        console.error("Error loading materials:", err);
       }
 
       await loadPendingQueue();
     });
 
     async function loadPendingQueue() {
-      const tbody = document.getElementById("pending-table-body");
-      const countBadge = document.getElementById("queue-count");
+      const tbody = document.getElementById("operator-pending-tbody");
       try {
-        const queue = await apiCall("/api/submissions/pending");
-        countBadge.innerText = `${queue.length} Waiting`;
+        pendingSubmissions = await apiCall("/api/submissions/pending");
+        document.getElementById("queue-count-txt").innerText = `(${pendingSubmissions.length})`;
+        document.getElementById("sidebar-queue-badge").innerText = pendingSubmissions.length;
 
-        if (queue.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--color-gray-subtle);">No submissions currently pending inspection. Great job!</td></tr>';
+        if (pendingSubmissions.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-secondary); padding: 24px;">No pending submissions in queue.</td></tr>';
+          clearVerificationForm();
           return;
         }
 
         tbody.innerHTML = "";
-        queue.forEach(sub => {
-          let itemsText = sub.items.map(it => `${it.materialName}: ${it.quantity} ${it.unit}`).join("<br>");
+        pendingSubmissions.forEach((sub, idx) => {
+          let matName = sub.items.length > 0 ? sub.items[0].materialName : "Plastic Bottles";
+          let weightVal = sub.items.length > 0 ? sub.items[0].quantity : 5.0;
+          let unitVal = sub.items.length > 0 ? sub.items[0].unit : "kg";
+
           const tr = document.createElement("tr");
           tr.innerHTML = `
-            <td>#${sub.id}</td>
-            <td><strong>${sub.customerName}</strong></td>
-            <td>${itemsText || "Awaiting entry"}</td>
-            <td>${sub.createdAt ? sub.createdAt.substring(0, 16).replace("T", " ") : "Just now"}</td>
-            <td>
-              <button class="btn btn-primary btn-sm" onclick="openVerifyModal(${JSON.stringify(sub).replace(/"/g, '&quot;')})">
-                Inspect & Verify
-              </button>
+            <td><strong>#SUB-${sub.id}</strong></td>
+            <td>${sub.customerName || "Customer"}</td>
+            <td>${matName}</td>
+            <td>${weightVal} ${unitVal}</td>
+            <td style="white-space: nowrap;">
+              <button class="btn btn-primary btn-sm" onclick="selectSubmissionForVerify(${sub.id})" style="padding: 4px 10px; margin-right: 4px;">Verify</button>
+              <button class="btn btn-danger btn-sm" onclick="quickRejectSubmission(${sub.id})" style="padding: 4px 10px;">Reject</button>
             </td>
           `;
           tbody.appendChild(tr);
         });
-      } catch (err) {
-        tbody.innerHTML = `<tr><td colspan="5" style="color: var(--color-danger); text-align: center;">Error loading queue: ${err.message}</td></tr>`;
-      }
-    }
 
-    function openVerifyModal(sub) {
-      activeSubmission = sub;
-      document.getElementById("modal-cust-name").innerText = sub.customerName;
-      document.getElementById("modal-sub-id").innerText = "#" + sub.id;
-      document.getElementById("verify-error").innerText = "";
-
-      const container = document.getElementById("verify-rows-container");
-      container.innerHTML = "";
-
-      // Prefill with declared items if present
-      if (sub.items && sub.items.length > 0) {
-        sub.items.forEach(it => {
-          addVerifyRow(it.materialId, it.quantity);
-        });
-      } else {
-        addVerifyRow();
-      }
-
-      calculateLivePoints();
-      document.getElementById("verify-modal").classList.add("active");
-    }
-
-    function closeVerifyModal() {
-      document.getElementById("verify-modal").classList.remove("active");
-      activeSubmission = null;
-    }
-
-    function addVerifyRow(selectedMatId = null, prefillQty = 1) {
-      const container = document.getElementById("verify-rows-container");
-      const row = document.createElement("div");
-      row.className = "verify-row";
-      row.style.cssText = "display: flex; gap: 8px; margin-bottom: 8px; align-items: center;";
-
-      let optionsHtml = '<option value="">-- Material --</option>';
-      allMaterials.forEach(m => {
-        const isSel = (selectedMatId && m.id === selectedMatId) ? "selected" : "";
-        optionsHtml += `<option value="${m.id}" data-rate="${m.pointsPerUnit}" data-unit="${m.unit}" ${isSel}>${m.name} (${m.pointsPerUnit} pts/${m.unit})</option>`;
-      });
-
-      row.innerHTML = `
-        <select class="form-control v-mat" style="flex: 2;" onchange="calculateLivePoints()" required>
-          ${optionsHtml}
-        </select>
-        <input type="number" step="0.1" min="0.1" max="5000" class="form-control v-qty" value="${prefillQty}" placeholder="Measured" style="flex: 1;" oninput="calculateLivePoints()" required>
-        <button type="button" class="btn btn-secondary btn-sm" onclick="this.parentElement.remove(); calculateLivePoints();" style="padding: 10px;">&times;</button>
-      `;
-      container.appendChild(row);
-      calculateLivePoints();
-    }
-
-    function calculateLivePoints() {
-      let total = 0;
-      const rows = document.querySelectorAll(".verify-row");
-      rows.forEach(r => {
-        const select = r.querySelector(".v-mat");
-        const qtyInput = r.querySelector(".v-qty");
-        const opt = select.options[select.selectedIndex];
-        if (opt && opt.dataset.rate) {
-          const rate = parseFloat(opt.dataset.rate);
-          const qty = parseFloat(qtyInput.value) || 0;
-          total += Math.round(rate * qty);
+        // Auto-select first item in queue
+        if (pendingSubmissions.length > 0 && !selectedSub) {
+          selectSubmissionForVerify(pendingSubmissions[0].id);
         }
-      });
-      document.getElementById("live-points-preview").innerText = total + " pts";
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="5" style="color: var(--danger-color); text-align: center;">Error: ${err.message}</td></tr>`;
+      }
+    }
+
+    function selectSubmissionForVerify(subId) {
+      selectedSub = pendingSubmissions.find(s => s.id === subId);
+      if (!selectedSub) return;
+
+      document.getElementById("vf-sub-id").value = `#SUB-${selectedSub.id}`;
+      if (selectedSub.items && selectedSub.items.length > 0) {
+        document.getElementById("vf-weight").value = selectedSub.items[0].quantity;
+        document.getElementById("vf-material-select").value = selectedSub.items[0].materialId;
+      } else {
+        document.getElementById("vf-weight").value = "5.0";
+      }
+      updateLivePointsPreview();
+    }
+
+    function clearVerificationForm() {
+      selectedSub = null;
+      document.getElementById("vf-sub-id").value = "--";
+      document.getElementById("vf-weight").value = "";
+      document.getElementById("points-preview-display").innerText = "+0 Points";
+    }
+
+    function updateLivePointsPreview() {
+      const select = document.getElementById("vf-material-select");
+      const opt = select.options[select.selectedIndex];
+      const qty = parseFloat(document.getElementById("vf-weight").value) || 0;
+      if (opt && opt.dataset.rate) {
+        const rate = parseFloat(opt.dataset.rate);
+        const total = Math.round(rate * qty);
+        document.getElementById("points-preview-display").innerText = `+${total} Points`;
+      }
     }
 
     async function handleConfirmVerification(e) {
       e.preventDefault();
-      if (!activeSubmission) return;
+      if (!selectedSub) {
+        showToast("Please select a pending submission from the table first.", "error");
+        return;
+      }
 
-      const rows = document.querySelectorAll(".verify-row");
-      const errEl = document.getElementById("verify-error");
+      const matId = parseInt(document.getElementById("vf-material-select").value);
+      const qty = parseFloat(document.getElementById("vf-weight").value);
+      const errEl = document.getElementById("vf-error");
       errEl.innerText = "";
 
-      const items = [];
-      rows.forEach(r => {
-        const matId = parseInt(r.querySelector(".v-mat").value);
-        const qty = parseFloat(r.querySelector(".v-qty").value);
-        if (matId && qty > 0) {
-          items.push({ materialId: matId, quantity: qty });
-        }
-      });
-
-      if (items.length === 0) {
-        errEl.innerText = "Please specify at least one verified material item.";
+      if (qty <= 0) {
+        errEl.innerText = "Measured weight or quantity must be greater than 0.";
         return;
       }
 
       try {
         const resp = await apiCall("/api/submissions/verify", "POST", {
-          submissionId: activeSubmission.id,
-          items: items
+          submissionId: selectedSub.id,
+          items: [{ materialId: matId, quantity: qty }]
         });
-        showToast(`Submission verified! Credited ${resp.pointsAwarded} points to customer.`);
-        closeVerifyModal();
+        showToast(`Verification confirmed! +${resp.pointsAwarded} points credited to customer.`);
+        selectedSub = null;
         await loadPendingQueue();
       } catch (err) {
         errEl.innerText = err.message;
       }
     }
 
-    async function handlePromptReject() {
-      if (!activeSubmission) return;
-      const reason = prompt("Enter the reason for rejecting this submission (e.g. contaminated waste, unaccepted items):");
+    async function handleRejectAction() {
+      if (!selectedSub) return;
+      quickRejectSubmission(selectedSub.id);
+    }
+
+    async function quickRejectSubmission(subId) {
+      const reason = prompt("Enter reason for rejection (e.g. contaminated waste, unaccepted material):");
       if (!reason || !reason.trim()) return;
 
       try {
         await apiCall("/api/submissions/reject", "POST", {
-          submissionId: activeSubmission.id,
+          submissionId: subId,
           reason: reason.trim()
         });
         showToast("Submission marked as REJECTED.", "error");
-        closeVerifyModal();
+        selectedSub = null;
         await loadPendingQueue();
       } catch (err) {
-        alert("Failed to reject submission: " + err.message);
+        alert("Failed to reject: " + err.message);
       }
     }
   </script>
