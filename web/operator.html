@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Operator Desk – RELOOP</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="container nav">
+      <a href="operator.html" class="brand">
+        <svg class="brand-logo" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="24" cy="24" r="22" stroke="#0A2619" stroke-width="2.5" stroke-dasharray="6 4"/>
+          <path d="M16 24C16 19.5817 19.5817 16 24 16C28.4183 16 32 19.5817 32 24C32 28.4183 28.4183 32 24 32" stroke="#C8A951" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="24" cy="24" r="3" fill="#0A2619"/>
+        </svg>
+        <span class="brand-name">RELOOP</span>
+      </a>
+
+      <div class="nav-actions">
+        <span class="badge badge-verified" id="station-badge">Station: Assigned Kiosk</span>
+        <span id="operator-badge" style="font-size: 14px; font-weight: 600; color: var(--color-forest);">Operator</span>
+        <button class="btn btn-outline btn-sm" onclick="logout()">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="container dashboard-page">
+    
+    <div class="dashboard-header">
+      <div>
+        <h1 class="user-welcome-title">Station Verification Desk</h1>
+        <p class="user-welcome-sub">Inspect dropped-off recyclables, record verified weights, and issue digital points.</p>
+      </div>
+      <div>
+        <button class="btn btn-secondary btn-sm" onclick="loadPendingQueue()">Refresh Queue</button>
+      </div>
+    </div>
+
+    <!-- Pending Queue Table -->
+    <div class="item-card" style="margin-bottom: 32px;">
+      <div class="item-header">
+        <h2 class="item-title">Pending Submissions Queue</h2>
+        <span class="badge badge-pending" id="queue-count">0 Waiting</span>
+      </div>
+      <p class="item-detail" style="margin-bottom: 20px;">
+        Customers awaiting physical inspection at this recycling kiosk.
+      </p>
+
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Sub ID</th>
+              <th>Customer</th>
+              <th>Declared Items</th>
+              <th>Submitted At</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="pending-table-body">
+            <tr>
+              <td colspan="5" style="text-align: center; color: var(--color-gray-subtle);">Loading pending queue...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Verification Modal -->
+  <div class="modal-overlay" id="verify-modal">
+    <div class="modal-card" style="max-width: 580px;">
+      <div class="modal-header">
+        <h3 class="modal-title">Inspect & Verify Submission</h3>
+        <button class="modal-close" onclick="closeVerifyModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="background: var(--color-bg); padding: 14px; border-radius: var(--radius-sm); margin-bottom: 20px;">
+          <div style="font-size: 13px; color: var(--color-gray-subtle);">Customer: <strong id="modal-cust-name" style="color: var(--color-forest);">--</strong></div>
+          <div style="font-size: 13px; color: var(--color-gray-subtle);">Submission ID: <strong id="modal-sub-id" style="color: var(--color-forest);">--</strong></div>
+        </div>
+
+        <form id="verify-form" onsubmit="handleConfirmVerification(event)">
+          <div class="form-group">
+            <label class="form-label">Verified Materials & Measured Quantities</label>
+            <div id="verify-rows-container">
+              <!-- Dynamically populated rows for measured items -->
+            </div>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="addVerifyRow()" style="margin-top: 8px;">
+              + Add Another Material
+            </button>
+          </div>
+
+          <!-- Live Points Preview -->
+          <div style="background: var(--color-champagne-light); border: 1px solid rgba(200, 169, 81, 0.4); border-radius: var(--radius-sm); padding: 14px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 13px; font-weight: 600; color: #8C6F23;">Calculated Reward Points:</span>
+            <span id="live-points-preview" style="font-family: var(--font-serif); font-size: 22px; font-weight: 700; color: #8C6F23;">0 pts</span>
+          </div>
+
+          <div id="verify-error" style="color: var(--color-danger); font-size: 13px; margin-bottom: 14px;"></div>
+
+          <div style="display: flex; gap: 12px;">
+            <button type="button" class="btn btn-danger" onclick="handlePromptReject()" style="flex: 1;">Reject</button>
+            <button type="submit" class="btn btn-primary" style="flex: 2;">Verify & Credit Wallet</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script>
+    let currentOperator = null;
+    let allMaterials = [];
+    let activeSubmission = null;
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      currentOperator = checkAuth("OPERATOR");
+      if (!currentOperator) return;
+
+      document.getElementById("operator-badge").innerText = currentOperator.name;
+      document.getElementById("station-badge").innerText = "Station ID: " + (currentOperator.stationId || "1");
+
+      try {
+        allMaterials = await apiCall("/api/materials");
+      } catch (err) {
+        console.error("Failed to load materials catalog:", err);
+      }
+
+      await loadPendingQueue();
+    });
+
+    async function loadPendingQueue() {
+      const tbody = document.getElementById("pending-table-body");
+      const countBadge = document.getElementById("queue-count");
+      try {
+        const queue = await apiCall("/api/submissions/pending");
+        countBadge.innerText = `${queue.length} Waiting`;
+
+        if (queue.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--color-gray-subtle);">No submissions currently pending inspection. Great job!</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = "";
+        queue.forEach(sub => {
+          let itemsText = sub.items.map(it => `${it.materialName}: ${it.quantity} ${it.unit}`).join("<br>");
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>#${sub.id}</td>
+            <td><strong>${sub.customerName}</strong></td>
+            <td>${itemsText || "Awaiting entry"}</td>
+            <td>${sub.createdAt ? sub.createdAt.substring(0, 16).replace("T", " ") : "Just now"}</td>
+            <td>
+              <button class="btn btn-primary btn-sm" onclick="openVerifyModal(${JSON.stringify(sub).replace(/"/g, '&quot;')})">
+                Inspect & Verify
+              </button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="5" style="color: var(--color-danger); text-align: center;">Error loading queue: ${err.message}</td></tr>`;
+      }
+    }
+
+    function openVerifyModal(sub) {
+      activeSubmission = sub;
+      document.getElementById("modal-cust-name").innerText = sub.customerName;
+      document.getElementById("modal-sub-id").innerText = "#" + sub.id;
+      document.getElementById("verify-error").innerText = "";
+
+      const container = document.getElementById("verify-rows-container");
+      container.innerHTML = "";
+
+      // Prefill with declared items if present
+      if (sub.items && sub.items.length > 0) {
+        sub.items.forEach(it => {
+          addVerifyRow(it.materialId, it.quantity);
+        });
+      } else {
+        addVerifyRow();
+      }
+
+      calculateLivePoints();
+      document.getElementById("verify-modal").classList.add("active");
+    }
+
+    function closeVerifyModal() {
+      document.getElementById("verify-modal").classList.remove("active");
+      activeSubmission = null;
+    }
+
+    function addVerifyRow(selectedMatId = null, prefillQty = 1) {
+      const container = document.getElementById("verify-rows-container");
+      const row = document.createElement("div");
+      row.className = "verify-row";
+      row.style.cssText = "display: flex; gap: 8px; margin-bottom: 8px; align-items: center;";
+
+      let optionsHtml = '<option value="">-- Material --</option>';
+      allMaterials.forEach(m => {
+        const isSel = (selectedMatId && m.id === selectedMatId) ? "selected" : "";
+        optionsHtml += `<option value="${m.id}" data-rate="${m.pointsPerUnit}" data-unit="${m.unit}" ${isSel}>${m.name} (${m.pointsPerUnit} pts/${m.unit})</option>`;
+      });
+
+      row.innerHTML = `
+        <select class="form-control v-mat" style="flex: 2;" onchange="calculateLivePoints()" required>
+          ${optionsHtml}
+        </select>
+        <input type="number" step="0.1" min="0.1" max="5000" class="form-control v-qty" value="${prefillQty}" placeholder="Measured" style="flex: 1;" oninput="calculateLivePoints()" required>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="this.parentElement.remove(); calculateLivePoints();" style="padding: 10px;">&times;</button>
+      `;
+      container.appendChild(row);
+      calculateLivePoints();
+    }
+
+    function calculateLivePoints() {
+      let total = 0;
+      const rows = document.querySelectorAll(".verify-row");
+      rows.forEach(r => {
+        const select = r.querySelector(".v-mat");
+        const qtyInput = r.querySelector(".v-qty");
+        const opt = select.options[select.selectedIndex];
+        if (opt && opt.dataset.rate) {
+          const rate = parseFloat(opt.dataset.rate);
+          const qty = parseFloat(qtyInput.value) || 0;
+          total += Math.round(rate * qty);
+        }
+      });
+      document.getElementById("live-points-preview").innerText = total + " pts";
+    }
+
+    async function handleConfirmVerification(e) {
+      e.preventDefault();
+      if (!activeSubmission) return;
+
+      const rows = document.querySelectorAll(".verify-row");
+      const errEl = document.getElementById("verify-error");
+      errEl.innerText = "";
+
+      const items = [];
+      rows.forEach(r => {
+        const matId = parseInt(r.querySelector(".v-mat").value);
+        const qty = parseFloat(r.querySelector(".v-qty").value);
+        if (matId && qty > 0) {
+          items.push({ materialId: matId, quantity: qty });
+        }
+      });
+
+      if (items.length === 0) {
+        errEl.innerText = "Please specify at least one verified material item.";
+        return;
+      }
+
+      try {
+        const resp = await apiCall("/api/submissions/verify", "POST", {
+          submissionId: activeSubmission.id,
+          items: items
+        });
+        showToast(`Submission verified! Credited ${resp.pointsAwarded} points to customer.`);
+        closeVerifyModal();
+        await loadPendingQueue();
+      } catch (err) {
+        errEl.innerText = err.message;
+      }
+    }
+
+    async function handlePromptReject() {
+      if (!activeSubmission) return;
+      const reason = prompt("Enter the reason for rejecting this submission (e.g. contaminated waste, unaccepted items):");
+      if (!reason || !reason.trim()) return;
+
+      try {
+        await apiCall("/api/submissions/reject", "POST", {
+          submissionId: activeSubmission.id,
+          reason: reason.trim()
+        });
+        showToast("Submission marked as REJECTED.", "error");
+        closeVerifyModal();
+        await loadPendingQueue();
+      } catch (err) {
+        alert("Failed to reject submission: " + err.message);
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customer Portal – RELOOP</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="container nav">
+      <a href="customer.html" class="brand">
+        <svg class="brand-logo" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="24" cy="24" r="22" stroke="#0A2619" stroke-width="2.5" stroke-dasharray="6 4"/>
+          <path d="M16 24C16 19.5817 19.5817 16 24 16C28.4183 16 32 19.5817 32 24C32 28.4183 28.4183 32 24 32" stroke="#C8A951" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="24" cy="24" r="3" fill="#0A2619"/>
+        </svg>
+        <span class="brand-name">RELOOP</span>
+      </a>
+
+      <div class="nav-actions">
+        <span id="user-badge" style="font-size: 14px; font-weight: 600; color: var(--color-forest);">Hello, Recycler</span>
+        <button class="btn btn-outline btn-sm" onclick="logout()">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Dashboard Main Container -->
+  <main class="container dashboard-page">
+    
+    <!-- Welcome Header & Live Wallet -->
+    <div class="dashboard-header">
+      <div>
+        <h1 class="user-welcome-title" id="welcome-heading">Welcome Back</h1>
+        <p class="user-welcome-sub">Manage your recycling submissions and accumulated reward balance.</p>
+      </div>
+
+      <!-- Wallet Balance Widget -->
+      <div class="wallet-badge-card">
+        <div class="wallet-badge-icon">🪙</div>
+        <div>
+          <div class="wallet-badge-num" id="wallet-balance">--</div>
+          <div class="wallet-badge-txt">Reward Points Balance</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Layout Columns: New Submission Form on Left, History on Right -->
+    <div style="display: grid; grid-template-columns: 1fr 1.6fr; gap: 32px; align-items: start;">
+      
+      <!-- New Drop-off Registration Card -->
+      <div class="item-card">
+        <div class="item-header">
+          <h2 class="item-title">New Recycling Drop-Off</h2>
+          <span class="badge badge-pending">STAGE 1</span>
+        </div>
+        <p class="item-detail" style="margin-bottom: 20px;">
+          Select a nearby station and declare the materials you are bringing for drop-off.
+        </p>
+
+        <form id="submission-form" onsubmit="handleNewSubmission(event)">
+          <div class="form-group">
+            <label class="form-label">Target Recycling Station</label>
+            <select id="sub-station" class="form-control" onchange="onStationChanged()" required>
+              <option value="">-- Choose Nearest Station --</option>
+            </select>
+          </div>
+
+          <!-- Dynamic Items Table -->
+          <div class="form-group">
+            <label class="form-label">Materials to Submit</label>
+            <div id="material-rows-container">
+              <!-- Dynamically generated rows -->
+            </div>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="addMaterialRow()" style="margin-top: 8px;">
+              + Add Material
+            </button>
+          </div>
+
+          <div id="sub-error" style="color: var(--color-danger); font-size: 13px; margin-bottom: 14px;"></div>
+          <button type="submit" class="btn btn-gold" style="width: 100%;">Submit Drop-Off Request</button>
+        </form>
+      </div>
+
+      <!-- Recycling Submissions History Table -->
+      <div>
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+          <h2 style="font-family: var(--font-serif); font-size: 24px; color: var(--color-forest);">Recycling History</h2>
+          <button class="btn btn-secondary btn-sm" onclick="loadHistory()">Refresh</button>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Station</th>
+                <th>Items & Quantities</th>
+                <th>Points</th>
+                <th>Status</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody id="history-table-body">
+              <tr>
+                <td colspan="6" style="text-align: center; color: var(--color-gray-subtle);">Loading submissions...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <script src="js/app.js"></script>
+  <script>
+    let activeMaterials = [];
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      const user = checkAuth("CUSTOMER");
+      if (!user) return;
+
+      document.getElementById("welcome-heading").innerText = "Welcome, " + user.name;
+      document.getElementById("user-badge").innerText = user.name + " (" + user.email + ")";
+
+      await loadWallet();
+      await loadStations();
+      await loadMaterials();
+      await loadHistory();
+
+      // Add one default row
+      addMaterialRow();
+    });
+
+    async function loadWallet() {
+      try {
+        const wallet = await apiCall("/api/wallet/balance");
+        document.getElementById("wallet-balance").innerText = wallet.balance.toLocaleString();
+      } catch (err) {
+        document.getElementById("wallet-balance").innerText = "0";
+      }
+    }
+
+    async function loadStations() {
+      try {
+        const stations = await apiCall("/api/stations");
+        const select = document.getElementById("sub-station");
+        select.innerHTML = '<option value="">-- Choose Nearest Station --</option>';
+        stations.forEach(s => {
+          const opt = document.createElement("option");
+          opt.value = s.id;
+          opt.text = s.name + " - " + s.area;
+          select.appendChild(opt);
+        });
+      } catch (err) {
+        console.error("Failed to load stations:", err);
+      }
+    }
+
+    async function loadMaterials() {
+      try {
+        activeMaterials = await apiCall("/api/materials");
+      } catch (err) {
+        console.error("Failed to load materials:", err);
+      }
+    }
+
+    function addMaterialRow() {
+      const container = document.getElementById("material-rows-container");
+      const row = document.createElement("div");
+      row.className = "material-input-row";
+      row.style.cssText = "display: flex; gap: 8px; margin-bottom: 8px; align-items: center;";
+
+      let optionsHtml = '<option value="">-- Select Material --</option>';
+      activeMaterials.forEach(m => {
+        optionsHtml += `<option value="${m.id}">${m.name} (${m.pointsPerUnit} pts/${m.unit})</option>`;
+      });
+
+      row.innerHTML = `
+        <select class="form-control mat-select" style="flex: 2;" required>
+          ${optionsHtml}
+        </select>
+        <input type="number" step="0.1" min="0.1" max="1000" class="form-control mat-qty" placeholder="Qty / Wt" style="flex: 1;" required>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="this.parentElement.remove()" style="padding: 10px;">&times;</button>
+      `;
+      container.appendChild(row);
+    }
+
+    function onStationChanged() {
+      // Optional: filter materials if station specific
+    }
+
+    async function handleNewSubmission(e) {
+      e.preventDefault();
+      const stationId = parseInt(document.getElementById("sub-station").value);
+      const rows = document.querySelectorAll(".material-input-row");
+      const errEl = document.getElementById("sub-error");
+      errEl.innerText = "";
+
+      const items = [];
+      rows.forEach(r => {
+        const matId = parseInt(r.querySelector(".mat-select").value);
+        const qty = parseFloat(r.querySelector(".mat-qty").value);
+        if (matId && qty > 0) {
+          items.push({ materialId: matId, quantity: qty });
+        }
+      });
+
+      if (items.length === 0) {
+        errEl.innerText = "Please add at least one material with a positive quantity.";
+        return;
+      }
+
+      try {
+        await apiCall("/api/submissions/create", "POST", { stationId, items });
+        showToast("Submission registered! Bring materials to the station for operator verification.");
+        document.getElementById("sub-station").value = "";
+        document.getElementById("material-rows-container").innerHTML = "";
+        addMaterialRow();
+        await loadHistory();
+      } catch (err) {
+        errEl.innerText = err.message;
+      }
+    }
+
+    async function loadHistory() {
+      const tbody = document.getElementById("history-table-body");
+      try {
+        const history = await apiCall("/api/submissions/customer");
+        if (history.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--color-gray-subtle);">No submissions recorded yet. Make your first drop-off!</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = "";
+        history.forEach(sub => {
+          let itemsText = sub.items.map(it => `${it.materialName}: ${it.quantity} ${it.unit}`).join("<br>");
+          let badgeClass = "badge-pending";
+          if (sub.status === "VERIFIED") badgeClass = "badge-verified";
+          else if (sub.status === "REJECTED") badgeClass = "badge-rejected";
+
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>#${sub.id}</td>
+            <td><strong>${sub.stationName || "Station " + sub.stationId}</strong></td>
+            <td>${itemsText || "Standard batch"}</td>
+            <td><strong>${sub.totalPoints} pts</strong></td>
+            <td>
+              <span class="badge ${badgeClass}">${sub.status}</span>
+              ${sub.rejectReason ? `<br><small style="color: var(--color-danger);">${sub.rejectReason}</small>` : ""}
+            </td>
+            <td>${sub.createdAt ? sub.createdAt.substring(0, 16).replace("T", " ") : "Just now"}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="6" style="color: var(--color-danger); text-align: center;">Error loading history: ${err.message}</td></tr>`;
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Console – RELOOP</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="container nav">
+      <a href="admin.html" class="brand">
+        <svg class="brand-logo" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="24" cy="24" r="22" stroke="#0A2619" stroke-width="2.5" stroke-dasharray="6 4"/>
+          <path d="M16 24C16 19.5817 19.5817 16 24 16C28.4183 16 32 19.5817 32 24C32 28.4183 28.4183 32 24 32" stroke="#C8A951" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="24" cy="24" r="3" fill="#0A2619"/>
+        </svg>
+        <span class="brand-name">RELOOP</span>
+      </a>
+
+      <div class="nav-actions">
+        <span class="badge badge-verified">Role: Administrator</span>
+        <button class="btn btn-outline btn-sm" onclick="logout()">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="container dashboard-page">
+    
+    <div class="dashboard-header">
+      <div>
+        <h1 class="user-welcome-title">Platform Executive Console</h1>
+        <p class="user-welcome-sub">System-wide operational oversight, recycling ledger, and user audits.</p>
+      </div>
+      <div>
+        <button class="btn btn-secondary btn-sm" onclick="loadAdminData()">Refresh Metrics</button>
+      </div>
+    </div>
+
+    <!-- 4 KPI Cards -->
+    <div class="impact-ribbon" style="margin-top: 0; margin-bottom: 36px;">
+      <div class="impact-item">
+        <div class="impact-number" id="kpi-customers">--</div>
+        <div class="impact-label">Registered Recyclers</div>
+      </div>
+      <div class="impact-item">
+        <div class="impact-number" id="kpi-submissions">--</div>
+        <div class="impact-label">Total Submissions</div>
+      </div>
+      <div class="impact-item">
+        <div class="impact-number" id="kpi-points">--</div>
+        <div class="impact-label">Points In Circulation</div>
+      </div>
+      <div class="impact-item">
+        <div class="impact-number" id="kpi-weight">--</div>
+        <div class="impact-label">Total Recycled Units/Kg</div>
+      </div>
+    </div>
+
+    <!-- Station Performance Overview -->
+    <div class="item-card" style="margin-bottom: 36px;">
+      <div class="item-header">
+        <h2 class="item-title">Station Performance Overview</h2>
+        <span class="badge badge-verified">REAL-TIME</span>
+      </div>
+      <p class="item-detail" style="margin-bottom: 16px;">Breakdown of activity across physical collection kiosks.</p>
+
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Station Name</th>
+              <th>Area / City</th>
+              <th>Total Submissions</th>
+              <th>Verified Submissions</th>
+              <th>Points Distributed</th>
+            </tr>
+          </thead>
+          <tbody id="stations-table-body">
+            <tr><td colspan="6" style="text-align: center;">Loading stations...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Registered Users Ledger -->
+    <div class="item-card">
+      <div class="item-header">
+        <h2 class="item-title">Registered Platform Users</h2>
+        <span class="badge badge-pending">AUDIT LEDGER</span>
+      </div>
+      <p class="item-detail" style="margin-bottom: 16px;">All customer, operator, and administrator accounts.</p>
+
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Full Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Assigned Station</th>
+              <th>Joined Date</th>
+            </tr>
+          </thead>
+          <tbody id="users-table-body">
+            <tr><td colspan="6" style="text-align: center;">Loading users...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="js/app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const user = checkAuth("ADMIN");
+      if (!user) return;
+      await loadAdminData();
+    });
+
+    async function loadAdminData() {
+      try {
+        const data = await apiCall("/api/admin/overview");
+
+        // 1. KPIs
+        const m = data.metrics;
+        document.getElementById("kpi-customers").innerText = m.totalCustomers || "0";
+        document.getElementById("kpi-submissions").innerText = m.totalSubmissions || "0";
+        document.getElementById("kpi-points").innerText = (m.totalPointsDistributed || 0).toLocaleString();
+        document.getElementById("kpi-weight").innerText = (m.totalRecycledQuantity || 0).toFixed(1);
+
+        // 2. Stations Table
+        const sTbody = document.getElementById("stations-table-body");
+        sTbody.innerHTML = "";
+        data.stations.forEach(s => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>#${s.stationId}</td>
+            <td><strong>${s.stationName}</strong></td>
+            <td>${s.area}</td>
+            <td>${s.totalSubmissions}</td>
+            <td><span class="badge badge-verified">${s.verifiedSubmissions}</span></td>
+            <td><strong>${s.totalPointsDistributed} pts</strong></td>
+          `;
+          sTbody.appendChild(tr);
+        });
+
+        // 3. Users Table
+        const uTbody = document.getElementById("users-table-body");
+        uTbody.innerHTML = "";
+        data.users.forEach(u => {
+          const tr = document.createElement("tr");
+          let badge = "badge-pending";
+          if (u.role === "ADMIN") badge = "badge-verified";
+          else if (u.role === "OPERATOR") badge = "badge-pending";
+
+          tr.innerHTML = `
+            <td>#${u.id}</td>
+            <td><strong>${u.name}</strong></td>
+            <td>${u.email}</td>
+            <td><span class="badge ${badge}">${u.role}</span></td>
+            <td>${u.stationName ? u.stationName : "—"}</td>
+            <td>${u.createdAt ? u.createdAt.substring(0, 10) : "Recent"}</td>
+          `;
+          uTbody.appendChild(tr);
+        });
+
+      } catch (err) {
+        showToast("Error loading admin data: " + err.message, "error");
+      }
+    }
+  </script>
+</body>
+</html>
