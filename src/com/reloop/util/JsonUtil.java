@@ -1,16 +1,18 @@
 package com.reloop.util;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.*;
 
 /**
- * Pure Java utility for JSON formatting and simple parsing without external libraries.
- * Keeps the project 100% compliant with standard Java SE.
- * Demonstrates: StringBuilder, String manipulation, Recursion, Collections.
+ * Pure Java utility for JSON formatting and parsing without external libraries.
+ * Supports Maps, Collections, Enums, Timestamps, and POJOs via reflection.
+ * Keeps the project 100% compliant with standard Core Java SE.
  */
 public class JsonUtil {
 
     /**
-     * Serializes an object, map, or list into a JSON string.
+     * Serializes any Java object into a valid JSON string.
      */
     public static String toJson(Object obj) {
         if (obj == null) {
@@ -21,6 +23,12 @@ public class JsonUtil {
         }
         if (obj instanceof Number || obj instanceof Boolean) {
             return obj.toString();
+        }
+        if (obj instanceof Enum) {
+            return "\"" + escape(((Enum<?>) obj).name()) + "\"";
+        }
+        if (obj instanceof java.sql.Timestamp || obj instanceof java.sql.Time || obj instanceof java.sql.Date || obj instanceof java.time.temporal.Temporal) {
+            return "\"" + escape(obj.toString()) + "\"";
         }
         if (obj instanceof Map) {
             Map<?, ?> map = (Map<?, ?>) obj;
@@ -47,11 +55,49 @@ public class JsonUtil {
             sb.append("]");
             return sb.toString();
         }
-        return "\"" + escape(obj.toString()) + "\"";
+        if (obj.getClass().isArray()) {
+            Object[] arr = (Object[]) obj;
+            StringBuilder sb = new StringBuilder("[");
+            boolean first = true;
+            for (Object item : arr) {
+                if (!first) sb.append(",");
+                sb.append(toJson(item));
+                first = false;
+            }
+            sb.append("]");
+            return sb.toString();
+        }
+
+        // POJO serialization via Reflection (iterates through class hierarchy)
+        try {
+            StringBuilder sb = new StringBuilder("{");
+            boolean first = true;
+            Class<?> curr = obj.getClass();
+            while (curr != null && curr != Object.class) {
+                Field[] fields = curr.getDeclaredFields();
+                for (Field field : fields) {
+                    if (Modifier.isStatic(field.getModifiers())) continue;
+                    // Don't expose sensitive password hash or salt in responses
+                    if ("passwordHash".equals(field.getName()) || "salt".equals(field.getName())) continue;
+
+                    field.setAccessible(true);
+                    Object val = field.get(obj);
+                    if (!first) sb.append(",");
+                    sb.append("\"").append(escape(field.getName())).append("\":");
+                    sb.append(toJson(val));
+                    first = false;
+                }
+                curr = curr.getSuperclass();
+            }
+            sb.append("}");
+            return sb.toString();
+        } catch (Exception e) {
+            return "\"" + escape(obj.toString()) + "\"";
+        }
     }
 
     /**
-     * Parses a flat or simple JSON object string into a Map<String, Object>.
+     * Parses a flat or nested JSON object string into a Map<String, Object>.
      */
     public static Map<String, Object> parseJsonObject(String json) {
         Map<String, Object> map = new LinkedHashMap<>();
@@ -66,7 +112,7 @@ public class JsonUtil {
         int i = 0;
         while (i < len) {
             // Find key
-            while (i < len && (s.charAt(i) == ' ' || s.charAt(i) == ',' || s.charAt(i) == '\n' || s.charAt(i) == '\r')) i++;
+            while (i < len && (s.charAt(i) == ' ' || s.charAt(i) == ',' || s.charAt(i) == '\n' || s.charAt(i) == '\r' || s.charAt(i) == '\t')) i++;
             if (i >= len) break;
             if (s.charAt(i) != '"') break;
             i++; // skip open quote
@@ -102,6 +148,17 @@ public class JsonUtil {
                 }
                 String arrayStr = s.substring(listStart, i);
                 map.put(key, parseJsonArrayOfObjects(arrayStr));
+            } else if (i < len && s.charAt(i) == '{') {
+                int objStart = i;
+                int depth = 1;
+                i++;
+                while (i < len && depth > 0) {
+                    if (s.charAt(i) == '{') depth++;
+                    else if (s.charAt(i) == '}') depth--;
+                    i++;
+                }
+                String objStr = s.substring(objStart, i);
+                map.put(key, parseJsonObject(objStr));
             } else {
                 int valStart = i;
                 while (i < len && s.charAt(i) != ',' && s.charAt(i) != '}') i++;
