@@ -254,8 +254,8 @@
       currentCustomer = checkAuth("CUSTOMER");
       if (!currentCustomer) return;
 
-      document.getElementById("customer-greeting").innerText = `Welcome back, ${currentCustomer.name}!`;
-      document.getElementById("user-avatar").innerText = currentCustomer.name.charAt(0).toUpperCase();
+      document.getElementById("customer-greeting").innerText = `Welcome back, ${safeText(currentCustomer.name, "Customer")}!`;
+      document.getElementById("user-avatar").innerText = safeText(currentCustomer.name, "Customer").charAt(0).toUpperCase();
       document.getElementById("user-email-pill").innerText = currentCustomer.email;
 
       await loadCustomerWallet();
@@ -267,11 +267,12 @@
     async function loadCustomerWallet() {
       try {
         const wallet = await apiCall("/api/wallet/balance");
-        if (wallet && wallet.balance !== undefined) {
-          document.getElementById("wallet-points-val").innerText = wallet.balance.toLocaleString();
+        if (wallet) {
+          const bal = safeNumber(wallet.balance, 0);
+          document.getElementById("wallet-points-val").innerText = bal.toLocaleString();
         }
       } catch (err) {
-        // Keeps default 1,250
+        // Keeps default
       }
     }
 
@@ -286,12 +287,18 @@
       stationsCatalog.forEach(s => {
         const opt = document.createElement("option");
         opt.value = s.id;
-        opt.text = (s.name || "Station " + s.id) + " - " + (s.area || "City Center");
+        opt.text = safeText(s.name, "Station " + s.id) + " - " + safeText(s.area, "City Center");
         select.appendChild(opt);
       });
 
       if (stationsCatalog.length > 0) {
-        document.getElementById("station-featured-name").innerText = stationsCatalog[0].name || "GreenMart Central";
+        const first = stationsCatalog[0];
+        document.getElementById("station-featured-name").innerText = safeText(first.name, "GreenMart Central");
+        // Add station image
+        const imgBox = document.querySelector(".station-preview-img");
+        if (imgBox) {
+          imgBox.innerHTML = `<img class="dash-station-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='140' viewBox='0 0 400 140'%3E%3Crect width='400' height='140' fill='%23D4EAE0'/%3E%3Ctext x='200' y='70' font-family='Arial' font-size='18' fill='%2321845A' text-anchor='middle' dominant-baseline='middle'%3E${safeText(first.name, 'Recycling Station')}</text%3E%3C/svg%3E" alt="${safeText(first.name, 'Station')}">`;
+        }
       }
     }
 
@@ -322,29 +329,29 @@
           let totalKg = 0;
           history.forEach(sub => {
             let matText = (sub.items && sub.items.length > 0)
-              ? sub.items.map(it => it.materialName || "Plastic Bottles").join(", ")
-              : "Plastic Bottles";
+              ? sub.items.map(it => safeText(it.materialName, "Recyclable Material")).join(", ")
+              : "Recyclable Material";
 
             let qtyText = (sub.items && sub.items.length > 0)
-              ? `${sub.items[0].quantity} ${sub.items[0].unit || "kg"}`
-              : "5.0 kg";
+              ? `${safeNumber(sub.items[0].quantity, 0)} ${safeText(sub.items[0].unit, "kg")}`
+              : "0 kg";
 
             if (sub.status === "VERIFIED") {
-              if (sub.items && sub.items.length > 0) totalKg += sub.items[0].quantity;
+              if (sub.items && sub.items.length > 0) totalKg += safeNumber(sub.items[0].quantity, 0);
             }
 
             let statusClass = "status-pending";
             if (sub.status === "VERIFIED") statusClass = "status-verified";
             else if (sub.status === "REJECTED") statusClass = "status-rejected";
 
-            let dateStr = sub.createdAt ? sub.createdAt.substring(0, 10) : "Today";
+            let dateStr = safeDate(sub.createdAt, "Today");
 
             const tr = document.createElement("tr");
             tr.innerHTML = `
               <td>${dateStr}</td>
               <td><strong>${matText}</strong></td>
               <td>${qtyText}</td>
-              <td><span class="status-pill ${statusClass}">${sub.status}</span></td>
+              <td><span class="status-pill ${statusClass}">${safeText(sub.status, "Pending")}</span></td>
             `;
             tbody.appendChild(tr);
           });
@@ -396,8 +403,8 @@
         // Prepend directly into table
         const tbody = document.getElementById("customer-history-tbody");
         const selectedMat = materialCatalog.find(m => m.id === matId);
-        const matName = selectedMat ? selectedMat.name : "Plastic Bottles";
-        const unitName = selectedMat ? selectedMat.unit : "kg";
+        const matName = selectedMat ? safeText(selectedMat.name, "Plastic Bottles") : "Plastic Bottles";
+        const unitName = selectedMat ? safeText(selectedMat.unit, "kg") : "kg";
 
         const newRow = document.createElement("tr");
         newRow.innerHTML = `

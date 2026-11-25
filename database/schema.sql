@@ -100,3 +100,34 @@ INSERT IGNORE INTO recycling_stations (name, address, area, open_time, close_tim
 INSERT IGNORE INTO station_materials (station_id, material_id)
  SELECT s.id, m.id FROM recycling_stations s CROSS JOIN materials m
  WHERE NOT (s.name = 'MetroMart Railway Station' AND m.name = 'Glass Jars');
+
+-- ============================================================
+-- ADDITIONAL SEED DATA (safe to re-run with INSERT IGNORE)
+-- ============================================================
+
+-- Additional materials: Glass Bottles, Steel Cans, E-waste
+INSERT IGNORE INTO materials (name, unit, points_per_unit) VALUES
+ ('Glass Bottles','PIECE',4),
+ ('Steel Cans','PIECE',3),
+ ('E-waste','PIECE',15);
+
+-- Additional stations
+INSERT IGNORE INTO recycling_stations (name, address, area, open_time, close_time) VALUES
+ ('EcoPoint Recycling Hub','Unit 7, EcoPoint Industrial Park','North District','09:00:00','21:00:00'),
+ ('Riverside Collection Centre','45 Riverside Avenue, Near River Bridge','Riverside','07:30:00','19:30:00'),
+ ('City Green Recycling Station','Block B, City Green Mall Parking','Downtown','10:00:00','22:00:00'),
+ ('Sustainable Earth Depot','120 Greenfield Road, Industrial Zone','West End','08:30:00','19:00:00');
+
+-- Additional station-material mappings
+-- EcoPoint Recycling Hub (id=2): Plastic Bottles(1), Aluminium Cans(2), Cardboard(4), Glass Bottles(6), E-waste(8)
+INSERT IGNORE INTO station_materials (station_id, material_id) VALUES (2,1),(2,2),(2,4),(2,6),(2,8);
+-- Riverside Collection Centre (id=3): Paper(3), Cardboard(4), Glass Jars(5), Steel Cans(7)
+INSERT IGNORE INTO station_materials (station_id, material_id) VALUES (3,3),(3,4),(3,5),(3,7);
+-- City Green Recycling Station (id=4): Plastic Bottles(1), Paper(3), Cardboard(4), E-waste(8)
+INSERT IGNORE INTO station_materials (station_id, material_id) VALUES (4,1),(4,3),(4,4),(4,8);
+-- Sustainable Earth Depot (id=5): Aluminium Cans(2), Glass Jars(5), Glass Bottles(6), E-waste(8)
+INSERT IGNORE INTO station_materials (station_id, material_id) VALUES (5,2),(5,5),(5,6),(5,8);
+
+-- Note: Users, wallets, submissions, items, and transactions are seeded
+-- by Main.java on application startup with proper PBKDF2 password hashing.
+-- This file only seeds reference data: materials, stations, station_materials.

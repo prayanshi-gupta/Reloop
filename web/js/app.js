@@ -69,23 +69,70 @@ function logout() {
   window.location.href = "/index.html";
 }
 
-// ---------------- Quick 1-Click Login (No Typing Required) ----------------
-async function quickLogin(role) {
-  let email = "customer@reloop.com";
-  let password = "customer123";
+// ---------------- Safe display helpers (zero undefined) ----------------
+function safeText(val, fallback = "Not available") {
+  if (val == null || val === undefined) return fallback;
+  const s = String(val).trim();
+  if (s === "" || s.toLowerCase() === "null" || s.toLowerCase() === "undefined" || s === "NaN") return fallback;
+  return s;
+}
 
-  if (role === "operator") {
-    email = "operator@reloop.com";
-    password = "operator123";
-  } else if (role === "admin") {
-    email = "admin@reloop.com";
-    password = "admin123";
-  }
+function safeNumber(val, fallback = 0) {
+  if (val == null || val === undefined) return fallback;
+  const n = Number(val);
+  return isNaN(n) ? fallback : n;
+}
 
-  showToast(`Signing in as ${role.toUpperCase()}...`);
+function getMaterialIcon(name) {
+  const n = (name || "").toLowerCase();
+  if (n.includes("plastic")) return "♻️";
+  if (n.includes("aluminium") || n.includes("aluminum")) return "🥫";
+  if (n.includes("paper")) return "📄";
+  if (n.includes("cardboard")) return "📦";
+  if (n.includes("glass")) return "🍾";
+  if (n.includes("steel")) return "🔩";
+  if (n.includes("e-waste") || n.includes("ewaste")) return "📱";
+  return "🗑️";
+}
 
+function safeDate(val, fallback = "Not available") {
+  if (!val) return fallback;
   try {
-    const data = await apiCall("/api/auth/login", "POST", { email, password });
+    const d = new Date(val);
+    if (isNaN(d.getTime())) return fallback;
+    return d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+  } catch (e) {
+    return fallback;
+  }
+}
+
+// ---------------- Email Dropdown Login (instead of quick buttons) ----------------
+const DEMO_ACCOUNTS = [
+  { label: "Emma Watson (Customer)", email: "emma@reloop.com", password: "customer123", role: "CUSTOMER" },
+  { label: "John Doe (Customer)", email: "john.doe@reloop.com", password: "customer123", role: "CUSTOMER" },
+  { label: "Sarah Lee (Customer)", email: "sarah.lee@reloop.com", password: "customer123", role: "CUSTOMER" },
+  { label: "Mike Chen (Customer)", email: "mike.chen@reloop.com", password: "customer123", role: "CUSTOMER" },
+  { label: "Lisa Wong (Customer)", email: "lisa.wong@reloop.com", password: "customer123", role: "CUSTOMER" },
+  { label: "Vikram Singh (Operator)", email: "vikram@reloop.com", password: "operator123", role: "OPERATOR" },
+  { label: "Priya Nair (Operator)", email: "priya@reloop.com", password: "operator123", role: "OPERATOR" },
+  { label: "Ahmed Khan (Operator)", email: "ahmed@reloop.com", password: "operator123", role: "OPERATOR" },
+  { label: "Carlos Ruiz (Operator)", email: "carlos@reloop.com", password: "operator123", role: "OPERATOR" },
+  { label: "Fatima Ali (Operator)", email: "fatima@reloop.com", password: "operator123", role: "OPERATOR" },
+  { label: "Platform Admin (Admin)", email: "admin@reloop.com", password: "admin123", role: "ADMIN" }
+];
+
+async function quickLoginFromDropdown() {
+  const select = document.getElementById("demo-account-select");
+  if (!select) return;
+  const idx = select.selectedIndex;
+  if (idx <= 0) {
+    showToast("Please select an account from the dropdown", "error");
+    return;
+  }
+  const acc = DEMO_ACCOUNTS[idx - 1];
+  showToast(`Signing in as ${safeText(acc.label)}...`);
+  try {
+    const data = await apiCall("/api/auth/login", "POST", { email: acc.email, password: acc.password });
     setSession(data.token, {
       userId: data.userId,
       name: data.name,
@@ -93,7 +140,7 @@ async function quickLogin(role) {
       role: data.role,
       stationId: data.stationId
     });
-    showToast("Signed in as " + data.name);
+    showToast("Signed in as " + safeText(data.name));
     setTimeout(() => {
       if (data.role === "CUSTOMER") window.location.href = "/customer.html";
       else if (data.role === "OPERATOR") window.location.href = "/operator.html";
@@ -224,7 +271,7 @@ async function handleLogin(e) {
       role: data.role,
       stationId: data.stationId
     });
-    showToast("Signed in as " + data.name);
+    showToast("Signed in as " + safeText(data.name, "User"));
     setTimeout(() => {
       if (data.role === "CUSTOMER") window.location.href = "/customer.html";
       else if (data.role === "OPERATOR") window.location.href = "/operator.html";
@@ -313,11 +360,11 @@ async function initLandingPage() {
       card.className = "card";
       card.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
-          <h4 style="font-size: 16px; color: var(--text-main); font-weight: 700;">${s.name || "Recycling Kiosk"}</h4>
+          <h4 style="font-size: 16px; color: var(--text-main); font-weight: 700;">${safeText(s.name, "Recycling Kiosk")}</h4>
           <span class="status-pill status-verified">Open</span>
         </div>
-        <p style="font-size: 13.5px; color: var(--text-secondary); margin-bottom: 6px;">📍 ${s.address || "City Center"}, ${s.area || "Central"}</p>
-        <p style="font-size: 13px; color: var(--primary-green); font-weight: 600;">⏰ Hours: ${s.openTime || "08:00"} - ${s.closeTime || "20:00"}</p>
+        <p style="font-size: 13.5px; color: var(--text-secondary); margin-bottom: 6px;">📍 ${safeText(s.address, "City Center")}, ${safeText(s.area, "Central")}</p>
+        <p style="font-size: 13px; color: var(--primary-green); font-weight: 600;">⏰ Hours: ${safeText(s.openTime, "08:00")} - ${safeText(s.closeTime, "20:00")}</p>
       `;
       stationsContainer.appendChild(card);
     });
@@ -330,14 +377,18 @@ async function initLandingPage() {
     materials.forEach(m => {
       const card = document.createElement("div");
       card.className = "card";
+      const matIcon = getMaterialIcon(safeText(m.name, "Material"));
       card.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center;">
-          <div>
-            <h4 style="font-size: 16px; font-weight: 700; color: var(--text-main);">${m.name || "Recyclable"}</h4>
-            <p style="font-size: 13px; color: var(--text-secondary);">Unit: ${m.unit || "KG"}</p>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span class="material-icon">${matIcon}</span>
+            <div>
+              <h4 style="font-size: 16px; font-weight: 700; color: var(--text-main);">${safeText(m.name, "Recyclable")}</h4>
+              <p style="font-size: 13px; color: var(--text-secondary);">Unit: ${safeText(m.unit, "KG")}</p>
+            </div>
           </div>
           <span style="font-size: 15px; font-weight: 700; color: var(--primary-green); background: var(--highlight-light); padding: 4px 12px; border-radius: 6px;">
-            ${m.pointsPerUnit || 5} pts
+            ${safeNumber(m.pointsPerUnit, 5)} pts
           </span>
         </div>
       `;

@@ -199,9 +199,12 @@
           <div id="station-performance-list">
             <!-- Progress bars matching Panel 4 -->
             <div class="progress-container">
-              <div class="progress-header">
-                <span>GreenMart Central</span>
-                <strong style="color: var(--primary-green);">92%</strong>
+              <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                <img class="dash-station-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='70' viewBox='0 0 200 70'%3E%3Crect width='200' height='70' fill='%23D4EAE0'/%3E%3Ctext x='100' y='35' font-family='Arial' font-size='14' fill='%2321845A' text-anchor='middle' dominant-baseline='middle'%3EGreenMart Central</text%3E%3C/svg%3E" alt="GreenMart Central" style="width: 60px; height: 40px; object-fit: cover; border-radius: 4px;">
+                <div>
+                  <div style="font-size: 13.5px; font-weight: 600;">GreenMart Central</div>
+                  <strong style="color: var(--primary-green);">92%</strong>
+                </div>
               </div>
               <div class="progress-track">
                 <div class="progress-bar-fill" style="width: 92%;"></div>
@@ -209,9 +212,12 @@
             </div>
 
             <div class="progress-container">
-              <div class="progress-header">
-                <span>EcoPoint Mall</span>
-                <strong style="color: var(--primary-green);">78%</strong>
+              <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                <img class="dash-station-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='70' viewBox='0 0 200 70'%3E%3Crect width='200' height='70' fill='%23C0E0D0'/%3E%3Ctext x='100' y='35' font-family='Arial' font-size='14' fill='%2321845A' text-anchor='middle' dominant-baseline='middle'%3EEcoPoint Recycling Hub</text%3E%3C/svg%3E" alt="EcoPoint Recycling Hub" style="width: 60px; height: 40px; object-fit: cover; border-radius: 4px;">
+                <div>
+                  <div style="font-size: 13.5px; font-weight: 600;">EcoPoint Recycling Hub</div>
+                  <strong style="color: var(--primary-green);">78%</strong>
+                </div>
               </div>
               <div class="progress-track">
                 <div class="progress-bar-fill" style="width: 78%;"></div>
@@ -219,9 +225,12 @@
             </div>
 
             <div class="progress-container">
-              <div class="progress-header">
-                <span>Riverside Hub</span>
-                <strong style="color: var(--primary-green);">65%</strong>
+              <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                <img class="dash-station-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='70' viewBox='0 0 200 70'%3E%3Crect width='200' height='70' fill='%23B8D8C8'/%3E%3Ctext x='100' y='35' font-family='Arial' font-size='14' fill='%2321845A' text-anchor='middle' dominant-baseline='middle'%3ERiverside Collection Centre</text%3E%3C/svg%3E" alt="Riverside Collection Centre" style="width: 60px; height: 40px; object-fit: cover; border-radius: 4px;">
+                <div>
+                  <div style="font-size: 13.5px; font-weight: 600;">Riverside Collection Centre</div>
+                  <strong style="color: var(--primary-green);">65%</strong>
+                </div>
               </div>
               <div class="progress-track">
                 <div class="progress-bar-fill" style="width: 65%;"></div>
@@ -321,7 +330,7 @@
       const admin = checkAuth("ADMIN");
       if (!admin) return;
 
-      document.getElementById("admin-avatar").innerText = admin.name ? admin.name.charAt(0).toUpperCase() : "A";
+      document.getElementById("admin-avatar").innerText = safeText(admin.name, "Admin").charAt(0).toUpperCase();
       document.getElementById("admin-email-pill").innerText = admin.email;
 
       await loadAdminData();
@@ -334,19 +343,11 @@
         // Metrics from DB
         const m = data.metrics;
         if (m) {
-          if (m.totalCustomers !== undefined) {
-            const count = (m.totalCustomers || 0) + (m.totalOperators || 0) + 1;
-            document.getElementById("admin-kpi-users").innerText = (count > 3 ? count : "1,248");
-          }
-          if (m.totalStations) {
-            document.getElementById("admin-kpi-stations").innerText = (m.totalStations > 3 ? m.totalStations : "24");
-          }
-          if (m.totalRecycledQuantity) {
-            document.getElementById("admin-kpi-collected").innerText = m.totalRecycledQuantity > 0 ? (m.totalRecycledQuantity.toFixed(1) + " kg") : "248.5 kg";
-          }
-          if (m.totalPointsDistributed) {
-            document.getElementById("admin-kpi-points").innerText = m.totalPointsDistributed > 0 ? m.totalPointsDistributed.toLocaleString() : "98,700";
-          }
+          const totalUsers = safeNumber(m.totalCustomers, 0) + safeNumber(m.totalOperators, 0) + safeNumber(m.totalAdmins, 0);
+          document.getElementById("admin-kpi-users").innerText = totalUsers.toLocaleString();
+          document.getElementById("admin-kpi-stations").innerText = safeNumber(m.totalStations, 0).toLocaleString();
+          document.getElementById("admin-kpi-collected").innerText = safeNumber(m.totalRecycledQuantity, 0).toFixed(1) + " kg";
+          document.getElementById("admin-kpi-points").innerText = safeNumber(m.totalPointsDistributed, 0).toLocaleString();
         }
 
         // Users Ledger from DB
@@ -355,19 +356,51 @@
           tbody.innerHTML = "";
           data.users.forEach(u => {
             let badge = "status-pending";
-            if (u.role === "ADMIN") badge = "status-verified";
-            else if (u.role === "OPERATOR") badge = "status-verified";
+            const role = safeText(u.role, "Customer");
+            if (role === "ADMIN") badge = "status-verified";
+            else if (role === "OPERATOR") badge = "status-verified";
 
             const tr = document.createElement("tr");
             tr.innerHTML = `
-              <td>#${u.id}</td>
-              <td><strong>${u.name || "User"}</strong></td>
-              <td>${u.email}</td>
-              <td><span class="status-pill ${badge}">${u.role}</span></td>
-              <td>${u.stationName ? u.stationName : "—"}</td>
-              <td>${u.createdAt ? u.createdAt.substring(0, 10) : "Recent"}</td>
+              <td>#${safeNumber(u.id, 0)}</td>
+              <td><strong>${safeText(u.name, "User")}</strong></td>
+              <td>${safeText(u.email, "not@available.com")}</td>
+              <td><span class="status-pill ${badge}">${role}</span></td>
+              <td>${safeText(u.stationName, "Not assigned")}</td>
+              <td>${safeDate(u.createdAt, "Recent")}</td>
             `;
             tbody.appendChild(tr);
+          });
+        }
+
+        // Station Performance from DB
+        const perfList = document.getElementById("station-performance-list");
+        if (data.stations && data.stations.length > 0 && perfList) {
+          perfList.innerHTML = "";
+          data.stations.forEach(s => {
+            const name = safeText(s.stationName, "Station");
+            const area = safeText(s.area, "Area");
+            const totalSubs = safeNumber(s.totalSubmissions, 0);
+            const verifiedSubs = safeNumber(s.verifiedSubmissions, 0);
+            const pct = totalSubs > 0 ? Math.round((verifiedSubs / totalSubs) * 100) : 0;
+            const pts = safeNumber(s.totalPointsDistributed, 0);
+
+            const div = document.createElement("div");
+            div.className = "progress-container";
+            div.innerHTML = `
+              <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                <img class="dash-station-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='70' viewBox='0 0 200 70'%3E%3Crect width='200' height='70' fill='%23D4EAE0'/%3E%3Ctext x='100' y='35' font-family='Arial' font-size='13' fill='%2321845A' text-anchor='middle' dominant-baseline='middle'%3E${name}</text%3E%3C/svg%3E" alt="${name}" style="width: 60px; height: 40px; object-fit: cover; border-radius: 4px;">
+                <div>
+                  <div style="font-size: 13.5px; font-weight: 600;">${name}</div>
+                  <div style="font-size: 12px; color: var(--text-secondary);">${area} &bull; ${pts.toLocaleString()} pts</div>
+                  <strong style="color: var(--primary-green);">${pct}%</strong>
+                </div>
+              </div>
+              <div class="progress-track">
+                <div class="progress-bar-fill" style="width: ${pct}%;"></div>
+              </div>
+            `;
+            perfList.appendChild(div);
           });
         }
       } catch (err) {

@@ -247,7 +247,7 @@
       currentOperator = checkAuth("OPERATOR");
       if (!currentOperator) return;
 
-      document.getElementById("op-avatar").innerText = currentOperator.name ? currentOperator.name.charAt(0).toUpperCase() : "O";
+      document.getElementById("op-avatar").innerText = safeText(currentOperator.name, "Operator").charAt(0).toUpperCase();
       document.getElementById("op-email-pill").innerText = currentOperator.email;
       if (currentOperator.stationId) {
         document.getElementById("op-station-id-txt").innerText = currentOperator.stationId;
@@ -255,6 +255,12 @@
 
       await loadMaterials();
       await loadPendingQueue();
+
+      // Add station image to station info card
+      const imgBox = document.querySelector("#station-info-card .station-preview-img");
+      if (imgBox) {
+        imgBox.innerHTML = `<img class="dash-station-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='140' viewBox='0 0 400 140'%3E%3Crect width='400' height='140' fill='%23D4EAE0'/%3E%3Ctext x='200' y='70' font-family='Arial' font-size='18' fill='%2321845A' text-anchor='middle' dominant-baseline='middle'%3EGreenMart Central Recycling Station</text%3E%3C/svg%3E" alt="GreenMart Central">`;
+      }
     });
 
     async function loadMaterials() {
@@ -268,9 +274,9 @@
       materialCatalog.forEach(m => {
         const opt = document.createElement("option");
         opt.value = m.id;
-        opt.dataset.rate = m.pointsPerUnit || 2;
-        opt.dataset.unit = m.unit || "KG";
-        opt.text = `${m.name || "Material"} (${m.pointsPerUnit || 2} pts/${m.unit || "unit"})`;
+        opt.dataset.rate = safeNumber(m.pointsPerUnit, 2);
+        opt.dataset.unit = safeText(m.unit, "KG");
+        opt.text = `${safeText(m.name, "Material")} (${safeNumber(m.pointsPerUnit, 2)} pts/${safeText(m.unit, "unit")})`;
         matSelect.appendChild(opt);
       });
       updateLivePointsPreview();
@@ -286,26 +292,30 @@
           tbody.innerHTML = "";
 
           livePending.forEach(sub => {
-            let matName = (sub.items && sub.items.length > 0) ? (sub.items[0].materialName || "Plastic Bottles") : "Plastic Bottles";
-            let matId = (sub.items && sub.items.length > 0) ? sub.items[0].materialId : 1;
-            let qty = (sub.items && sub.items.length > 0) ? sub.items[0].quantity : 5.0;
-            let unit = (sub.items && sub.items.length > 0) ? (sub.items[0].unit || "kg") : "kg";
+            let matName = (sub.items && sub.items.length > 0) ? safeText(sub.items[0].materialName, "Recyclable Material") : "Recyclable Material";
+            let matId = (sub.items && sub.items.length > 0) ? safeNumber(sub.items[0].materialId, 1) : 1;
+            let qty = (sub.items && sub.items.length > 0) ? safeNumber(sub.items[0].quantity, 5.0) : 5.0;
+            let unit = (sub.items && sub.items.length > 0) ? safeText(sub.items[0].unit, "kg") : "kg";
+            let custName = safeText(sub.customerName, "Customer");
 
             const tr = document.createElement("tr");
             tr.innerHTML = `
-              <td><strong>#SUB-${sub.id}</strong></td>
-              <td>${sub.customerName || "Customer"}</td>
+              <td><strong>#SUB-${safeNumber(sub.id, 0)}</strong></td>
+              <td>${custName}</td>
               <td>${matName}</td>
               <td>${qty} ${unit}</td>
               <td style="white-space: nowrap;">
-                <button class="btn btn-primary btn-sm" onclick="selectRowForVerify(${sub.id}, '${sub.customerName || 'Customer'}', ${matId}, ${qty})" style="padding: 5px 12px; margin-right: 4px;">Verify</button>
-                <button class="btn btn-danger-light btn-sm" onclick="quickRejectRow(${sub.id})" style="padding: 5px 12px;">Reject</button>
+                <button class="btn btn-primary btn-sm" onclick="selectRowForVerify(${safeNumber(sub.id, 0)}, '${custName.replace(/'/g, "\\'")}', ${matId}, ${qty})" style="padding: 5px 12px; margin-right: 4px;">Verify</button>
+                <button class="btn btn-danger-light btn-sm" onclick="quickRejectRow(${safeNumber(sub.id, 0)})" style="padding: 5px 12px;">Reject</button>
               </td>
             `;
             tbody.appendChild(tr);
           });
 
-          selectRowForVerify(livePending[0].id, livePending[0].customerName || 'Customer', 1, 5.0);
+          if (livePending.length > 0) {
+            const first = livePending[0];
+            selectRowForVerify(safeNumber(first.id, 0), safeText(first.customerName, "Customer"), 1, 5.0);
+          }
         }
       } catch (err) {
         console.log("Using default sample pending submissions:", err);

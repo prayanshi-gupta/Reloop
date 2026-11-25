@@ -30,7 +30,7 @@
 
       <div class="pub-nav-actions">
         <!-- Quick 1-Click Access Pill for convenience -->
-        <button class="btn btn-secondary btn-sm" onclick="quickLogin('customer')">⚡ Demo Customer</button>
+        <button class="btn btn-secondary btn-sm" onclick="openAuthModal('login')">⚡ Demo Login</button>
         <button class="btn btn-outline btn-sm" onclick="openAuthModal('login')">Login</button>
         <button class="btn btn-primary btn-sm" onclick="openAuthModal('register')">Register</button>
       </div>
@@ -278,25 +278,28 @@
       </div>
       <div class="modal-body">
         
-        <!-- 1-Click Quick Login Buttons (No Typing Needed!) -->
+        <!-- Demo Account Select Dropdown (instead of quick buttons) -->
         <div style="margin-bottom: 18px;">
           <div style="font-size: 13px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
-            1-Click Instant Login:
+            Select Demo Account:
           </div>
-          <div class="quick-login-grid">
-            <button type="button" class="quick-login-btn" onclick="quickLogin('customer')">
-              <span>👤 <strong>Customer (Emma)</strong></span>
-              <span class="quick-login-tag">1-Click &rarr;</span>
-            </button>
-            <button type="button" class="quick-login-btn" onclick="quickLogin('operator')">
-              <span>⚖️ <strong>Operator (Station 1)</strong></span>
-              <span class="quick-login-tag">1-Click &rarr;</span>
-            </button>
-            <button type="button" class="quick-login-btn" onclick="quickLogin('admin')">
-              <span>🛡️ <strong>Platform Admin</strong></span>
-              <span class="quick-login-tag">1-Click &rarr;</span>
-            </button>
+          <div class="form-group" style="margin-bottom: 0;">
+            <select id="demo-account-select" class="form-control">
+              <option value="">-- Choose an account to login --</option>
+              <option>👤 Emma Watson (Customer) - emma@reloop.com</option>
+              <option>👤 John Doe (Customer) - john.doe@reloop.com</option>
+              <option>👤 Sarah Lee (Customer) - sarah.lee@reloop.com</option>
+              <option>👤 Mike Chen (Customer) - mike.chen@reloop.com</option>
+              <option>👤 Lisa Wong (Customer) - lisa.wong@reloop.com</option>
+              <option>⚖️ Vikram Singh (Operator) - vikram@reloop.com</option>
+              <option>⚖️ Priya Nair (Operator) - priya@reloop.com</option>
+              <option>⚖️ Ahmed Khan (Operator) - ahmed@reloop.com</option>
+              <option>⚖️ Carlos Ruiz (Operator) - carlos@reloop.com</option>
+              <option>⚖️ Fatima Ali (Operator) - fatima@reloop.com</option>
+              <option>🛡️ Platform Admin (Admin) - admin@reloop.com</option>
+            </select>
           </div>
+          <button type="button" class="btn btn-primary" style="width: 100%; margin-top: 10px;" onclick="quickLoginFromDropdown()">Sign In with Selected Account</button>
         </div>
 
         <div style="text-align: center; position: relative; margin: 18px 0;">
